@@ -1,54 +1,107 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Health Journey</title>
-    <style>
-        /* CSS styles*/
-        #visualization {
-        width: 500px;
-        height: 300px;
-        background-color: #f1f1f1;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Health Journey</title>
+  <style>
+    /* CSS styles for the visualization */
+    #visualization {
+      width: 800px;
+      height: 500px;
+      background-color: #f1f1f1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
 
-        svg {
-        width: 100%;
-        height: 100%;
-        }
-    </style>
+    svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    .annotation {
+      font-size: 14px;
+      fill: #333;
+    }
+  </style>
 </head>
 <body>
-    <h1>Exploring Personal Health and Wellness</h1>
-    <div id="visualization"></div>
+  <h1>Exploring Personal Health and Wellness</h1>
+  <div id="visualization"></div>
 
-    <script src="https://d3js.org/d3.v7.min.js"></script>
-    <script src="https://unpkg.com/d3-annotation"></script>
-    <script src="https://unpkg.com/topojson-client@3"></script>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <script src="https://unpkg.com/d3-annotation"></script>
+  <script src="https://unpkg.com/topojson-client@3"></script>
 
-    <script>
-        // Sample Code to Test
-        const svg = d3.select("#visualization")
-        .append("svg")
-        .attr("width", "100%")
-        .attr("height", "100%");
+  <script>
+    // Topics to focus on in the main home page
+    const healthAspects = [
+      { aspect: 'Physical Fitness', color: '#FF5370' },
+      { aspect: 'Nutrition', color: '#FFCB6B' },
+      { aspect: 'Mental Well-being', color: '#6C98FF' },
+      { aspect: 'Sleep', color: '#00B19F' }
+    ];
 
-        svg.append("circle")
-        .attr("cx", "50%")
-        .attr("cy", "50%")
-        .attr("r", 50)
-        .attr("fill", "blue");
+    const svg = d3.select("#visualization")
+      .append("svg")
+      .attr("width", "100%")
+      .attr("height", "100%");
 
-        svg.append("text")
-        .attr("x", "50%")
-        .attr("y", "50%")
-        .attr("text-anchor", "middle")
-        .attr("alignment-baseline", "middle")
-        .text("Hello, D3!");
+    // Display all the health aspects from the list of objects
+    const aspectGroup = svg.selectAll(".aspect")
+      .data(healthAspects)
+      .enter()
+      .append("g")
+      .attr("class", "aspect")
+      .attr("transform", (d, i) => `translate(${i * 200 + 100}, 200)`);
 
-    </script>
+    // Add a circle with text inside it for each group
+    aspectGroup.append("circle")
+      .attr("cx", 0)
+      .attr("cy", 0)
+      .attr("r", 60)
+      .attr("fill", d => d.color);
+
+    aspectGroup.append("text")
+      .attr("x", 0)
+      .attr("y", 80)
+      .attr("text-anchor", "middle")
+      .attr("alignment-baseline", "middle")
+      .text(d => d.aspect)
+      .style("font-size", "14px")
+      .style("font-weight", "bold");
+
+    // Annotations
+    const annotations = [
+      {
+        note: {
+          label: "Click on each aspect to explore personalized insights!",
+          title: "Discover More"
+        },
+        x: 200,
+        y: 100,
+        dy: 100,
+        dx: 100
+      }
+    ];
+
+    const makeAnnotations = d3.annotation()
+      .type(d3.annotationLabel)
+      .annotations(annotations);
+
+    svg.append("g")
+      .attr("class", "annotation-group")
+      .call(makeAnnotations);
+
+    // Function to handle aspect click event
+    function handleAspectClick(aspect) {
+      console.log("Clicked on aspect:", aspect);
+    }
+
+    // Register aspect click event listeners
+    aspectGroup.on("click", (event, d) => handleAspectClick(d.aspect));
+  </script>
 </body>
 </html>
