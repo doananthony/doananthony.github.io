@@ -4,6 +4,37 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Health Journey: Exploring Personal Health and Wellness</title>
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles.css"> <!-- Add your custom CSS styles if needed -->
 </head>
+<body>
+  <div id="visualization"></div>
+
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <script src="https://unpkg.com/d3-annotation"></script>
+  <script src="https://unpkg.com/topojson-client@3"></script>
+
+  <script>
+    // Your JavaScript code goes here
+
+    // Sample code snippet for reference:
+    const svg = d3.select("#visualization")
+      .append("svg")
+      .attr("width", 500)
+      .attr("height", 300);
+
+    svg.append("circle")
+      .attr("cx", 100)
+      .attr("cy", 150)
+      .attr("r", 50)
+      .attr("fill", "blue");
+
+    svg.append("text")
+      .attr("x", 100)
+      .attr("y", 150)
+      .attr("text-anchor", "middle")
+      .attr("alignment-baseline", "middle")
+      .text("Hello, D3!");
+
+  </script>
+</body>
 </html>
