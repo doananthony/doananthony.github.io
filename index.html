@@ -4,8 +4,15 @@
   <meta charset="utf-8">
   <title>World Happiness Slideshow</title>
   <style>
-    svg {
-      background-color: #f2f2f2;
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+    }
+    #visualization-container {
+      width: 100%;
+      height: 100%;
     }
   </style>
 </head>
@@ -14,8 +21,8 @@
 
   <script src="https://d3js.org/d3.v7.min.js"></script>
   <script>
-    const width = 800;
-    const height = 600;
+    const width = window.innerWidth;
+    const height = window.innerHeight;
 
     const svg = d3.select("#visualization-container")
       .append("svg")
@@ -34,7 +41,7 @@
       .attr("y", height / 2 + 30)
       .attr("text-anchor", "middle")
       .attr("font-size", "16px")
-      .text("Welcome to the World Happiness Report visualization!");
+      .text("Welcome to the World Happiness Report!");
 
     svg.append("rect")
       .attr("x", width / 2 - 50)
@@ -46,7 +53,7 @@
       .style("fill", "blue")
       .style("cursor", "pointer")
       .on("click", () => {
-        console.log("Next Part")
+        console.log("Next Scene")
       });
 
     svg.append("text")
@@ -55,7 +62,7 @@
       .attr("text-anchor", "middle")
       .attr("font-size", "16px")
       .attr("fill", "white")
-      .text("Next");
+      .text("Let's Get Happy");
   </script>
 </body>
 </html>
