@@ -45,11 +45,12 @@
           nextButton.on("click", () => {
             currentSceneIndex++;
             if (currentSceneIndex >= scenes.length) {
-              currentSceneIndex = 0;
+                console.log("HELLOS");
+                currentSceneIndex = 0;
             }
             loadScene();
           });
-          console.log(currentSceneIndex);
+          console.log(scenes.length);
           console.log(scenes[currentSceneIndex]);
         })
         .catch(error => console.error(error));
