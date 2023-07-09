@@ -38,20 +38,28 @@
       fetch(scenePath)
         .then(response => response.text())
         .then(html => {
-          d3.select("#visualization-container").html(html);
+            d3.select("#visualization-container").html(html);
 
-          // Button to navigate between scenes
-          const nextButton = d3.select("#nextButton");
-          nextButton.on("click", () => {
-            currentSceneIndex++;
-            console.log(currentSceneIndex)
-            if (currentSceneIndex >= scenes.length) {
-                console.log("HELLOS");
-                currentSceneIndex = 0;
+            // Button to navigate between scenes
+            const nextButton = d3.select("#nextButton");
+            const nextRectButton = d3.select("rect");
+
+            nextButton.on("click", handleClick);
+            nextRectButton.on("click", handleClick);
+
+            function handleClick() {
+                currentSceneIndex++;
+                console.log(currentSceneIndex);
+                
+                if (currentSceneIndex >= scenes.length) {
+                    console.log("HELLOS");
+                    currentSceneIndex = 0;
+                }
+                
+                loadScene();
             }
-            loadScene();
-          });
-          console.log(scenes[currentSceneIndex]);
+            
+            console.log(scenes[currentSceneIndex]);
         })
         .catch(error => console.error(error));
     }
