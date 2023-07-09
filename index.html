@@ -1,70 +1,59 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8">
-    <title>World Happiness Slideshow</title>
-    <style>
-        html,
-        body {
-        margin: 0;
-        padding: 0;
-        height: 100%;
-        }
-        #visualization-container {
-        width: 100%;
-        height: 100%;
-        }
-    </style>
+  <meta charset="utf-8">
+  <title>World Happiness Slideshow</title>
+  <style>
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+    }
+    #visualization-container {
+      width: 100%;
+      height: 100%;
+    }
+  </style>
 </head>
 <body>
-    <div id="visualization-container"></div>
+  <div id="visualization-container"></div>
 
-    <script src="https://d3js.org/d3.v7.min.js"></script>
-    <script>
-        const width = window.innerWidth;
-        const height = window.innerHeight;
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <script>
+    const scenes = [
+      "introduction.html"
+    ];
 
-        const scenes = [
-            "introduction.html",
-            "scene2.html",
-            "scene3.html"
-        ];
+    let currentSceneIndex = 0;
 
-        let currentSceneIndex = 0;
+    function loadScene() {
+      const scenePath = scenes[currentSceneIndex];
 
-        function loadScene() {
-            const scenePath = scenes[currentSceneIndex];
+      // Clear existing content
+      d3.select("#visualization-container").html("");
 
-            // Clear existing content
-            d3.select("#visualization-container").html("");
+      // Load the scene HTML file using fetch()
+      fetch(scenePath)
+        .then(response => response.text())
+        .then(html => {
+          d3.select("#visualization-container").html(html);
 
-            // Load the scene HTML file
-            d3.html(scenePath).then((fragment) => {
-                const container = d3.select("#visualization-container");
-                container.node().appendChild(fragment.documentElement);
+          // Button to navigate between scenes
+          const nextButton = d3.select("#nextButton");
+          nextButton.on("click", () => {
+            currentSceneIndex++;
+            if (currentSceneIndex >= scenes.length) {
+              currentSceneIndex = 0;
+            }
+            loadScene();
+          });
+        })
+        .catch(error => console.error(error));
+    }
 
-                // Check if the loaded scene contains JavaScript code
-                const scriptElement = fragment.getElementsByTagName("script")[0];
-                if (scriptElement) {
-                    const scriptCode = scriptElement.innerHTML;
-                    eval(scriptCode);
-                }
-
-                // Add a button or trigger to advance to the next scene
-                const nextButton = container.select("#nextButton");
-                nextButton.on("click", () => {
-                currentSceneIndex++;
-                // Go back to homepage if end is reached
-                if (currentSceneIndex >= scenes.length) {
-                    currentSceneIndex = 0; 
-                }
-                loadScene();
-                });
-            });
-        }
-
-        // Load initial scene
-        loadScene();
-    </script>
+    // Initial call to load the first scene
+    loadScene();
+  </script>
 </body>
 </html>
