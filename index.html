@@ -1,71 +1,67 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="utf-8">
-  <title>World Happiness Slideshow</title>
-  <style>
-    html,
-    body {
-      margin: 0;
-      padding: 0;
-      height: 100%;
-    }
-    #visualization-container {
-      width: 100%;
-      height: 100%;
-    }
-  </style>
+    <meta charset="utf-8">
+    <title>World Happiness Slideshow</title>
+    <style>
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+        }
+        #visualization-container {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
 </head>
 <body>
-  <div id="visualization-container"></div>
+    <div id="visualization-container"></div>
 
-  <script src="https://d3js.org/d3.v7.min.js"></script>
-  <script>
-    const scenes = [
-      "introduction.html",
-      "scene2.html"
-    ];
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script>
+        const scenes = [
+            "introduction.html",
+            "scene2.html"
+        ];
 
-    let currentSceneIndex = 0;
+        let currentSceneIndex = 0;
 
-    function loadScene() {
-      const scenePath = scenes[currentSceneIndex];
+        function loadScene() {
+            const scenePath = scenes[currentSceneIndex];
 
-      // Clear existing content
-      d3.select("#visualization-container").html("");
+            // Clear existing content
+            d3.select("#visualization-container").html("");
 
-      // Load the scene HTML file using fetch()
-      fetch(scenePath)
-        .then(response => response.text())
-        .then(html => {
-            d3.select("#visualization-container").html(html);
+            // Load the scene HTML file using fetch()
+            fetch(scenePath)
+            .then(response => response.text())
+            .then(html => {
+                d3.select("#visualization-container").html(html);
 
-            // Button to navigate between scenes
-            const nextButton = d3.select("#nextButton");
-            const nextRectButton = d3.select("rect");
+                // Button to navigate between scenes
+                const nextButton = d3.select("#nextButton");
+                const nextRectButton = d3.select("rect");
 
-            nextButton.on("click", handleClick);
-            nextRectButton.on("click", handleClick);
+                nextButton.on("click", handleClick);
+                nextRectButton.on("click", handleClick);
 
-            function handleClick() {
-                currentSceneIndex++;
-                console.log(currentSceneIndex);
-                
-                if (currentSceneIndex >= scenes.length) {
-                    console.log("HELLOS");
-                    currentSceneIndex = 0;
-                }
-                
-                loadScene();
+                function handleClick() {
+                    currentSceneIndex++;
+                    
+                    if (currentSceneIndex >= scenes.length) {
+                        currentSceneIndex = 0;
+                    }
+
+                    loadScene();
             }
-            
-            console.log(scenes[currentSceneIndex]);
         })
         .catch(error => console.error(error));
-    }
+        }
 
-    // Initial call to load the first scene
-    loadScene();
-  </script>
+        // Initial call to load the first scene
+        loadScene();
+    </script>
 </body>
 </html>
