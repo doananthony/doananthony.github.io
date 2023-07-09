@@ -6,14 +6,14 @@
     <style>
         html,
         body {
-            margin: 0;
-            padding: 0;
-            height: 100%;
+        margin: 0;
+        padding: 0;
+        height: 100%;
         }
-    #visualization-container {
+        #visualization-container {
         width: 100%;
         height: 100%;
-    }
+        }
     </style>
 </head>
 <body>
@@ -38,24 +38,32 @@
             // Clear existing content
             d3.select("#visualization-container").html("");
 
-            // Load HTML file for the next scene/slide
+            // Load the scene HTML file
             d3.html(scenePath).then((fragment) => {
                 const container = d3.select("#visualization-container");
                 container.node().appendChild(fragment.documentElement);
 
-                const nextButton = container.select("#next-button");
+                // Check if the loaded scene contains JavaScript code
+                const scriptElement = fragment.getElementsByTagName("script")[0];
+                if (scriptElement) {
+                    const scriptCode = scriptElement.innerHTML;
+                    eval(scriptCode);
+                }
+
+                // Add a button or trigger to advance to the next scene
+                const nextButton = container.select("#nextButton");
                 nextButton.on("click", () => {
-                    currentSceneIndex++;
-                    // Loop back to the first scene if end is reached
-                    if (currentSceneIndex >= scenes.length) {
-                        currentSceneIndex = 0;
-                    }
-                    loadScene();
+                currentSceneIndex++;
+                // Go back to homepage if end is reached
+                if (currentSceneIndex >= scenes.length) {
+                    currentSceneIndex = 0; 
+                }
+                loadScene();
                 });
             });
         }
 
-        // Load first scene
+        // Load initial scene
         loadScene();
     </script>
 </body>
