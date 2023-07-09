@@ -44,7 +44,8 @@
           const nextButton = d3.select("#nextButton");
           nextButton.on("click", () => {
             currentSceneIndex++;
-            if (currentSceneIndex >= scenes.length-1) {
+            console.log(currentSceneIndex)
+            if (currentSceneIndex >= scenes.length) {
                 console.log("HELLOS");
                 currentSceneIndex = 0;
             }
