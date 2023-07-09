@@ -1,16 +1,15 @@
-<svg width="100%" height="100%">
-    <image xlink:href="smiley-face.png" x="40%" y="30%" width="80" height="80"></image>
-    <text x="50%" y="40%" text-anchor="middle" font-size="24px">Introduction</text>
-    <text x="50%" y="50%" text-anchor="middle" font-size="16px">Welcome to the World Happiness Slideshow!</text>
-    <rect x="38%" y="56.5%" width="150" height="50" rx="10" ry="10" fill="blue" style="cursor: pointer;" onclick="parent.loadScene()"></rect>
-    <text x="50%" y="60%" text-anchor="middle" alignment-baseline="middle" font-size="16px" fill="white">Next</text>
-</svg>
-
-<script src="https://d3js.org/d3.v7.min.js"></script>
-<script>
-    d3.select("#nextButton").on("click", () => {
-        // Trigger event to advance to next scene
-        parent.loadScene();
-    });
-</script>
+<style>
+    #container {
+      text-align: center;
+    }
+</style>
   
+<div id="container">
+    <svg width="100%" height="100%">
+      <text x="50%" y="40%" text-anchor="middle" font-size="24px">World Happiness</text>
+      <image xlink:href="smiley-face.svg" x="50%" y="50%" width="80" height="80"></image>
+      <text x="50%" y="58%" text-anchor="middle" font-size="16px">Get ready for an exciting Global Adventure</text>
+      <rect x="45%" y="66.5%" width="150" height="50" rx="10" ry="10" fill="blue" style="cursor: pointer;" onclick="parent.loadScene()"></rect>
+      <text x="50%" y="70%" text-anchor="middle" alignment-baseline="middle" font-size="16px" fill="white">Let's Begin</text>
+    </svg>
+</div>  
