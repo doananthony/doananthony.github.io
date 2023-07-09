@@ -1,16 +1,13 @@
 <svg width="100%" height="100%">
     <text x="50%" y="40%" text-anchor="middle" font-size="24px">Scene 2</text>
     <text x="50%" y="50%" text-anchor="middle" font-size="16px">Welcome to Scene 2!</text>
-    <g transform="translate(50%, 60%)">
-        <rect width="150" height="50" rx="10" ry="10" fill="blue" style="cursor: pointer;"></rect>
-        <text x="50%" y="50%" text-anchor="middle" alignment-baseline="middle" font-size="14px" fill="white">Next</text>
-    </g>
+    <button id="nextButton">Next</button>
 </svg>
   
 <script src="https://d3js.org/d3.v7.min.js"></script>
 <script>
-    d3.select("rect").on("click", () => {
-      parent.loadScene();
+    d3.select("#nextButton").on("click", () => {
+        parent.loadScene();
     });
 </script>
   
