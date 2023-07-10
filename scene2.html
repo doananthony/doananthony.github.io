@@ -1,13 +1,84 @@
 <div>
-    <h1>Scene 2</h1>
-    <p>Thanks for stopping by!</p>
-    <button id="nextButton">Back to Home</button>
-</div>
-
-<script src="https://d3js.org/d3.v7.min.js"></script>
-<script>
-    d3.select("#nextButton").on("click", () => {
+    <h1>Scene 1</h1>
+    <div id="data-container"></div>
+    <div id="filter-container">
+      <label for="year-filter">Filter by Year:</label>
+      <select id="year-filter"></select>
+    </div>
+    <button id="nextButton">Next</button>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script>
+      d3.csv("data/happiness_report.csv").then(function(data) {
+        console.log(data);
+        const dataContainer = d3.select("#scene1 #data-container");
+        const filterContainer = d3.select("#scene1 #filter-container");
+        const yearFilter = d3.select("#scene1 #year-filter");
+  
+        // Extract unique years from data
+        const years = Array.from(new Set(data.map(d => d.Year)));
+  
+        // Populate year filter options
+        yearFilter.selectAll("option")
+          .data(years)
+          .join("option")
+          .attr("value", d => d)
+          .text(d => d);
+  
+        // Set initial filter value
+        let currentYear = yearFilter.property("value");
+  
+        // Update table when filter is changed
+        yearFilter.on("change", function() {
+          currentYear = this.value;
+          updateTable();
+        });
+  
+        // Create table container
+        const tableContainer = dataContainer.append("div")
+          .attr("class", "table-container");
+  
+        // Create SVG table
+        const table = tableContainer.append("table");
+  
+        const tableHeaders = ["Year", "Rank", "Country", "Score"];
+  
+        // Draw table headers
+        table.append("thead")
+          .append("tr")
+          .selectAll("th")
+          .data(tableHeaders)
+          .join("th")
+          .text(d => d);
+  
+        const tbody = table.append("tbody");
+  
+        // Update table based on current year filter
+        function updateTable() {
+          const filteredData = data.filter(d => d.Year === currentYear);
+  
+          // Remove existing table rows
+          tbody.selectAll("tr").remove();
+  
+          // Draw table rows
+          const rows = tbody.selectAll("tr")
+            .data(filteredData)
+            .join("tr");
+  
+          // Draw table cells
+          const cells = rows.selectAll("td")
+            .data(d => tableHeaders.map(header => d[header]))
+            .join("td")
+            .text(d => d);
+        }
+  
+        // Initialize table
+        updateTable();
+      });
+  
+      d3.select("#nextButton").on("click", () => {
         // Trigger event to advance to next scene
         parent.loadScene();
-    });
-</script>
+      });
+    </script>
+  </div>
+  
