@@ -5,131 +5,39 @@
   <title>World Happiness Slideshow</title>
 </head>
 <body>
-  <div class="slide active" id="welcome">
-    <h1>Welcome</h1>
-    <p>Get ready for an exciting Global Adventure</p>
-    <button onclick="nextSlide()" class="continue-button">Continue</button>
-    <div class="tooltip">
-      <span class="tooltiptext">Use arrow keys to navigate</span>
-    </div>
-  </div>
-
-  <!-- Scene 1 Stuffs -->
-  <div class="slide" id="scene1">
-    <h1>Scene 1</h1>
-    <div id="data-container"></div>
-    <div id="filter-container">
-      <label for="year-filter">Filter by Year:</label>
-      <select id="year-filter"></select>
-    </div>
-    <button onclick="nextSlide()" class="continue-button">Continue</button>
-    <script src="https://d3js.org/d3.v7.min.js"></script>
-    <script>
-      d3.csv("data/happiness_report.csv").then(function(data) {
-        const dataContainer = d3.select("#scene1 #data-container");
-        const filterContainer = d3.select("#scene1 #filter-container");
-        const yearFilter = d3.select("#scene1 #year-filter");
-
-        // Extract unique years from data
-        const years = Array.from(new Set(data.map(d => d.Year)));
-
-        // Populate year filter options
-        yearFilter.selectAll("option")
-          .data(years)
-          .join("option")
-          .attr("value", d => d)
-          .text(d => d);
-
-        // Set initial filter value
-        let currentYear = yearFilter.property("value");
-
-        // Update table when filter is changed
-        yearFilter.on("change", function() {
-          currentYear = this.value;
-          updateTable();
-        });
-
-        // Create SVG table
-        const table = dataContainer.append("table");
-
-        const tableHeaders = ["Year", "Rank", "Country", "Score"];
-
-        // Draw table headers
-        table.append("thead")
-          .append("tr")
-          .selectAll("th")
-          .data(tableHeaders)
-          .join("th")
-          .text(d => d);
-
-        const tbody = table.append("tbody");
-
-        // Update table based on current year filter
-        function updateTable() {
-          const filteredData = data.filter(d => d.Year === currentYear);
-
-          // Draw table rows
-          const rows = tbody.selectAll("tr")
-            .data(filteredData)
-            .join("tr");
-
-          // Draw table cells
-          const cells = rows.selectAll("td")
-            .data(d => tableHeaders.map(header => d[header]))
-            .join("td")
-            .text(d => d);
-        }
-
-        // Initialize table
-        updateTable();
-      });
-    </script>
-  </div> 
-  
-  <!-- Scene 2 Stuffs -->
-  <div class="slide" id="scene2">
-    <h1>Scene 2</h1>
-    <p>Welcome to Scene 2</p>
-    <button onclick="nextSlide()" class="continue-button">Continue</button>
-    <div class="tooltip">
-      <span class="tooltiptext">Use arrow keys to navigate</span>
-    </div>
-  </div>
+  <div id="container"></div>
 
   <script src="https://d3js.org/d3.v7.min.js"></script>
   <script>
     let currentSlideIndex = 0;
-    const slides = d3.selectAll('.slide');
-    const continueButtons = d3.selectAll('.continue-button');
+    const slides = [
+      "welcome.html",
+      "scene1.html",
+      "scene2.html"
+    ];
+
+    const container = d3.select("#container");
 
     function showSlide(index) {
-      slides.classed('active', false);
-      slides.filter((d, i) => i === index).classed('active', true);
+      container.html("");
+      container.append("div")
+        .attr("class", "slide")
+        .attr("id", "slide" + index)
+        .html('<object type="text/html" data="' + slides[index] + '" width="100%" height="100%"></object>');
     }
 
-    continueButtons.on('click', function() {
-      currentSlideIndex = (currentSlideIndex + 1) % slides.size();
+    showSlide(currentSlideIndex);
+
+    function nextSlide() {
+      currentSlideIndex = (currentSlideIndex + 1) % slides.length;
       showSlide(currentSlideIndex);
-    });
-
-    function showTooltip() {
-      const tooltip = d3.select(this.parentNode).select('.tooltip');
-      tooltip.style('visibility', 'visible').style('opacity', 1);
     }
-
-    function hideTooltip() {
-      const tooltip = d3.select(this.parentNode).select('.tooltip');
-      tooltip.style('visibility', 'hidden').style('opacity', 0);
-    }
-
-    continueButtons.on('mouseover', showTooltip).on('mouseout', hideTooltip);
 
     document.addEventListener('keydown', function(event) {
       if (event.key === 'ArrowRight') {
-        currentSlideIndex = (currentSlideIndex + 1) % slides.size();
-        showSlide(currentSlideIndex);
+        nextSlide();
       } else if (event.key === 'ArrowLeft') {
-        currentSlideIndex = (currentSlideIndex - 1 + slides.size()) % slides.size();
+        currentSlideIndex = (currentSlideIndex - 1 + slides.length) % slides.length;
         showSlide(currentSlideIndex);
       }
     });
