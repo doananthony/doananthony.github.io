@@ -6,13 +6,12 @@
       <select id="year-filter"></select>
     </div>
     <button id="nextButton">Next</button>
-    <script src="https://d3js.org/d3.v7.min.js"></script>
-    <script>
+    <script src="https://d3js.org/d3.v7.min.js">
       d3.csv("data/happiness_report.csv").then(function(data) {
         console.log(data);
-        const dataContainer = d3.select("#scene1 #data-container");
-        const filterContainer = d3.select("#scene1 #filter-container");
-        const yearFilter = d3.select("#scene1 #year-filter");
+        const dataContainer = d3.select("#data-container");
+        const filterContainer = d3.select("#filter-container");
+        const yearFilter = d3.select("#year-filter");
   
         // Extract unique years from data
         const years = Array.from(new Set(data.map(d => d.Year)));
