@@ -96,13 +96,13 @@
     <div class="tooltip">
       <span class="tooltiptext">Use arrow keys to navigate</span>
     </div>
-  
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <script>
-      const dataContainer = d3.select('.data-container');
+      const dataContainer = d3.select('#scene1 .data-container');
       const columns = ['Overall rank', 'Country or region', 'Year', 'Score', 'GDP per capita', 'Social support', 'Healthy life expectancy', 'Freedom to make life choices', 'Generosity', 'Perceptions of corruption'];
   
       d3.csv('data/happiness_report.csv').then(function(data) {
+        console.log(data);
         const table = dataContainer.append('table');
         const thead = table.append('thead');
         const tbody = table.append('tbody');
@@ -123,7 +123,7 @@
           .text(d => d);
       });
     </script>
-  </div>
+  </div>  
   
   <!-- Scene 2 Stuffs -->
   <div class="slide" id="scene2">
