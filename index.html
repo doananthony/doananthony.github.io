@@ -99,7 +99,7 @@
     <button onclick="nextSlide()" class="continue-button">Continue</button>
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <script>
-      d3.csv("data/world_happiness.csv").then(function(data) {
+      d3.csv("data/happiness_report.csv").then(function(data) {
         const dataContainer = d3.select("#scene1 #data-container");
         const filterContainer = d3.select("#scene1 #filter-container");
         const yearFilter = d3.select("#scene1 #year-filter");
