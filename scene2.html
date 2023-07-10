@@ -1,9 +1,13 @@
-<!-- Scene 2 Stuffs -->
-<div class="slide" id="scene2">
+<div>
     <h1>Scene 2</h1>
-    <p>Welcome to Scene 2</p>
-    <button onclick="parent.nextSlide()" class="continue-button">Back to Beginning</button>
-    <div class="tooltip">
-      <span class="tooltiptext">Use arrow keys to navigate</span>
-    </div>
-  </div>
+    <p>Thanks for stopping by!</p>
+    <button id="nextButton">Back to Home</button>
+</div>
+
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script>
+    d3.select("#nextButton").on("click", () => {
+        // Trigger event to advance to next scene
+        parent.loadScene();
+    });
+</script>
