@@ -89,8 +89,16 @@
       slides.filter((d, i) => i === currentSlideIndex).classed('active', true);
     }
     
-    function buttonHover(element) {
-      d3.select(element).classed('hover', d3.event.type === 'mouseover');
+    function buttonHover(button) {
+      d3.select(button)
+        .style('background-color', '#111')
+        .style('color', '#fff');
+    }
+
+    function buttonUnhover(button) {
+      d3.select(button)
+        .style('background-color', '#fff')
+        .style('color', '#111');
     }
   </script>
 </body>
