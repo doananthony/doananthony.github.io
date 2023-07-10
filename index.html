@@ -1,67 +1,95 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8">
-    <title>World Happiness Slideshow</title>
-    <style>
-        html,
-        body {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-        }
-        #visualization-container {
-            width: 100%;
-            height: 100%;
-        }
-    </style>
+  <meta charset="utf-8">
+  <title>World Happiness Slideshow</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      background-color: #111;
+      color: #fff;
+    }
+
+    .slide {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      text-align: center;
+      opacity: 0;
+      transition: opacity 0.5s ease-in-out;
+    }
+
+    .slide.active {
+      opacity: 1;
+    }
+
+    h1 {
+      font-size: 4em;
+      margin-bottom: 0.5em;
+    }
+
+    p {
+      font-size: 2em;
+    }
+
+    button {
+      font-size: 1.5em;
+      padding: 0.5em 1em;
+      background-color: #fff;
+      color: #111;
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
+    }
+
+    button:hover {
+      background-color: #111;
+      color: #fff;
+    }
+  </style>
 </head>
 <body>
-    <div id="visualization-container"></div>
+  <div class="slide active" id="welcome">
+    <h1>Welcome</h1>
+    <p>World Happiness Slideshow</p>
+    <button onclick="nextSlide()">Next</button>
+  </div>
 
-    <script src="https://d3js.org/d3.v7.min.js"></script>
-    <script>
-        const scenes = [
-            "introduction.html",
-            "scene2.html"
-        ];
+  <div class="slide" id="scene1">
+    <h1>Scene 1</h1>
+    <p>Welcome to Scene 1</p>
+    <button onclick="nextSlide()">Next</button>
+  </div>
 
-        let currentSceneIndex = 0;
+  <div class="slide" id="scene2">
+    <h1>Scene 2</h1>
+    <p>Welcome to Scene 2</p>
+    <button onclick="nextSlide()">Next</button>
+  </div>
 
-        function loadScene() {
-            const scenePath = scenes[currentSceneIndex];
+  <div class="slide" id="scene3">
+    <h1>Scene 3</h1>
+    <p>Welcome to Scene 3</p>
+    <button onclick="nextSlide()">Next</button>
+  </div>
 
-            // Clear existing content
-            d3.select("#visualization-container").html("");
+  <script>
+    let currentSlideIndex = 0;
+    const slides = document.getElementsByClassName('slide');
 
-            // Load the scene HTML file using fetch()
-            fetch(scenePath)
-            .then(response => response.text())
-            .then(html => {
-                d3.select("#visualization-container").html(html);
-
-                // Button to navigate between scenes
-                const nextButton = d3.select("#nextButton");
-                const nextRectButton = d3.select("rect");
-
-                nextButton.on("click", handleClick);
-                nextRectButton.on("click", handleClick);
-
-                function handleClick() {
-                    currentSceneIndex++;
-                    
-                    if (currentSceneIndex >= scenes.length) {
-                        currentSceneIndex = 0;
-                    }
-
-                    loadScene();
-            }
-        })
-        .catch(error => console.error(error));
-        }
-
-        // Initial call to load the first scene
-        loadScene();
-    </script>
+    function nextSlide() {
+      slides[currentSlideIndex].classList.remove('active');
+      currentSlideIndex = (currentSlideIndex + 1) % slides.length;
+      slides[currentSlideIndex].classList.add('active');
+    }
+  </script>
 </body>
 </html>
