@@ -1,8 +1,14 @@
-<div class="slide active" id="welcome">
+<div>
     <h1>Welcome</h1>
     <p>Get ready for an exciting Global Adventure</p>
-    <button onclick="parent.nextSlide()" class="continue-button">Continue</button>
-    <div class="tooltip">
-      <span class="tooltiptext">Use arrow keys to navigate</span>
-    </div>
-  </div>
+    <button id="nextButton">Next</button>
+</div>
+
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script>
+    d3.select("#nextButton").on("click", () => {
+        // Trigger event to advance to next scene
+        parent.loadScene();
+    });
+</script>
+  

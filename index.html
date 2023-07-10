@@ -4,67 +4,58 @@
   <meta charset="utf-8">
   <title>World Happiness Slideshow</title>
   <style>
-    .slide {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      display: none;
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
     }
-
-    .slide.active {
-      display: block;
+    #visualization-container {
+      width: 100%;
+      height: 100%;
     }
   </style>
 </head>
 <body>
-  <div id="container"></div>
+  <div id="visualization-container"></div>
 
   <script src="https://d3js.org/d3.v7.min.js"></script>
   <script>
-    let currentSlideIndex = 0;
-    const slides = [
-      { id: "welcome", url: "welcome.html" },
-      { id: "scene1", url: "scene1.html" },
-      { id: "scene2", url: "scene2.html" }
+    const scenes = [
+      "welcome.html",
+      "scene1.html",
+      "scene2.html"
     ];
 
-    const container = d3.select("#container");
+    let currentSceneIndex = 0;
 
-    function showSlide(index) {
-      const previousSlide = container.select(".slide.active");
-      const currentSlide = container.append("div")
-        .attr("class", "slide")
-        .attr("id", slides[index].id)
-        .html('<object type="text/html" data="' + slides[index].url + '" width="100%" height="100%"></object>');
+    function loadScene() {
+      const scenePath = scenes[currentSceneIndex];
 
-      previousSlide.transition().style("opacity", 0).on("end", function() {
-        previousSlide.remove();
-      });
+      // Clear existing content
+      d3.select("#visualization-container").html("");
 
-      currentSlide.style("opacity", 0).transition().style("opacity", 1);
+      // Load the scene HTML file using fetch()
+      fetch(scenePath)
+        .then(response => response.text())
+        .then(html => {
+          d3.select("#visualization-container").html(html);
 
-      currentSlideIndex = index;
+          // Button to navigate between scenes
+          const nextButton = d3.select("#nextButton");
+          nextButton.on("click", () => {
+            currentSceneIndex++;
+            if (currentSceneIndex >= scenes.length) {
+              currentSceneIndex = 0;
+            }
+            loadScene();
+          });
+        })
+        .catch(error => console.error(error));
     }
 
-    showSlide(currentSlideIndex);
-
-    function nextSlide() {
-      const nextIndex = (currentSlideIndex + 1) % slides.length;
-      showSlide(nextIndex);
-    }
-
-    container.on("click", nextSlide);
-
-    document.addEventListener('keydown', function(event) {
-      if (event.key === 'ArrowRight') {
-        nextSlide();
-      } else if (event.key === 'ArrowLeft') {
-        const previousIndex = (currentSlideIndex - 1 + slides.length) % slides.length;
-        showSlide(previousIndex);
-      }
-    });
+    // Initial call to load the first scene
+    loadScene();
   </script>
 </body>
 </html>

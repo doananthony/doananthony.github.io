@@ -5,7 +5,7 @@
     <label for="year-filter">Filter by Year:</label>
     <select id="year-filter"></select>
 </div>
-<button onclick="parent.nextSlide()" class="continue-button">Continue</button>
+<button id="nextButton">Next</button>
 <script src="https://d3js.org/d3.v7.min.js"></script>
 <script>
     d3.csv("data/happiness_report.csv").then(function(data) {
@@ -68,3 +68,10 @@
     });
 </script>
 </div> 
+<script src="https://d3js.org/d3.v7.min.js">
+    d3.select("#nextButton").on("click", () => {
+        // Trigger event to advance to next scene
+        parent.loadScene();
+    });
+</script>
+  
