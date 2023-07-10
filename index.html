@@ -19,9 +19,10 @@
       width: 100vw;
       height: 100vh;
       display: flex;
-      flex-direction: column;
       justify-content: center;
       align-items: center;
+      flex-direction: column;
+      text-align: center;
       opacity: 0;
       transition: opacity 0.5s ease-in-out;
     }
@@ -35,10 +36,8 @@
       margin-bottom: 0.5em;
     }
 
-    .content {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+    p {
+      font-size: 2em;
     }
 
     .tooltip {
@@ -46,7 +45,7 @@
       display: inline-block;
     }
 
-    .tooltiptext {
+    .tooltip .tooltiptext {
       visibility: hidden;
       width: 200px;
       background-color: rgba(0, 0, 0, 0.8);
@@ -68,10 +67,6 @@
       opacity: 1;
     }
 
-    .button-container {
-      margin-top: 1em;
-    }
-
     .continue-button {
       font-size: 1.5em;
       padding: 0.5em 1em;
@@ -86,41 +81,39 @@
 <body>
   <div class="slide active" id="welcome">
     <h1>Welcome</h1>
-    <div class="content">
-      <div class="tooltip">
-        <img src="images/world-happiness.jpeg" alt="Smiley Face" width="150"></img>
-        <span class="tooltiptext">Tooltip text</span>
-      </div>
-      <p>Get ready for an exciting Global Adventure</p>
-    </div>
-    <div class="button-container">
-      <button onclick="nextSlide()" class="continue-button">Continue</button>
+    <p>Get ready for an exciting Global Adventure</p>
+    <button onclick="nextSlide()" class="continue-button">Continue</button>
+    <div class="tooltip">
+      <span class="tooltiptext">Use arrow keys to navigate</span>
     </div>
   </div>
 
   <div class="slide" id="scene1">
     <h1>Scene 1</h1>
     <p>Welcome to Scene 1</p>
-    <div class="button-container">
-      <button onclick="nextSlide()" class="continue-button">Continue</button>
+    <button onclick="nextSlide()" class="continue-button">Continue</button>
+    <div class="tooltip">
+      <span class="tooltiptext">Use arrow keys to navigate</span>
     </div>
   </div>
 
   <div class="slide" id="scene2">
     <h1>Scene 2</h1>
     <p>Welcome to Scene 2</p>
-    <div class="button-container">
-      <button onclick="nextSlide()" class="continue-button">Continue</button>
+    <button onclick="nextSlide()" class="continue-button">Continue</button>
+    <div class="tooltip">
+      <span class="tooltiptext">Use arrow keys to navigate</span>
     </div>
   </div>
 
+  <script src="https://d3js.org/d3.v7.min.js"></script>
   <script>
     let currentSlideIndex = 0;
     const slides = d3.selectAll('.slide');
     const continueButtons = d3.selectAll('.continue-button');
 
     function showSlide(index) {
-      slides.filter('.active').classed('active', false);
+      slides.classed('active', false);
       slides.filter((d, i) => i === index).classed('active', true);
     }
 
@@ -129,17 +122,17 @@
       showSlide(currentSlideIndex);
     });
 
-    const tooltip = d3.select('.tooltip');
-    const tooltipText = tooltip.select('.tooltiptext');
+    function showTooltip() {
+      const tooltip = d3.select(this.parentNode).select('.tooltip');
+      tooltip.style('visibility', 'visible').style('opacity', 1);
+    }
 
-    tooltip.on('mouseover', function() {
-      tooltipText.style('visibility', 'visible')
-        .style('opacity', 1);
-    })
-    .on('mouseout', function() {
-      tooltipText.style('visibility', 'hidden')
-        .style('opacity', 0);
-    });
+    function hideTooltip() {
+      const tooltip = d3.select(this.parentNode).select('.tooltip');
+      tooltip.style('visibility', 'hidden').style('opacity', 0);
+    }
+
+    continueButtons.on('mouseover', showTooltip).on('mouseout', hideTooltip);
 
     document.addEventListener('keydown', function(event) {
       if (event.key === 'ArrowRight') {
