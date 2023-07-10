@@ -40,14 +40,6 @@
       font-size: 2em;
     }
 
-    .content-wrapper {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 2em;
-    }
-
     button {
       font-size: 1.5em;
       padding: 0.5em 1em;
@@ -67,8 +59,8 @@
 <body>
   <div class="slide active" id="welcome">
     <h1>Welcome</h1>
-    <div class="content-wrapper">
-      <img src="world-happiness.jpeg" alt="Smiley Face" width="150"></img>
+    <div>
+      <img src="images/world-happiness.jpeg" alt="Smiley Face" width="150"></img>
       <p>Get ready for an exciting Global Adventure</p>
     </div>
     <button onclick="nextSlide()">Next</button>
@@ -87,19 +79,20 @@
   </div>
 
   <div class="slide" id="scene3">
-    <h1>Scene 3</h1>
-    <p>Welcome to Scene 3</p>
-    <button onclick="nextSlide()">Next</button>
+    <h1>Thank you!</h1>
+    <p>Have a &#128512; Day!</p>
+    <button onclick="nextSlide()">Home</button>
   </div>
 
+  <script src="https://d3js.org/d3.v7.min.js"></script>
   <script>
     let currentSlideIndex = 0;
-    const slides = document.getElementsByClassName('slide');
+    const slides = d3.selectAll('.slide');
 
     function nextSlide() {
-      slides[currentSlideIndex].classList.remove('active');
-      currentSlideIndex = (currentSlideIndex + 1) % slides.length;
-      slides[currentSlideIndex].classList.add('active');
+      slides.filter('.active').classed('active', false);
+      currentSlideIndex = (currentSlideIndex + 1) % slides.size();
+      slides.filter((d, i) => i === currentSlideIndex).classed('active', true);
     }
   </script>
 </body>
