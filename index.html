@@ -91,39 +91,97 @@
   <!-- Scene 1 Stuffs -->
   <div class="slide" id="scene1">
     <h1>Scene 1</h1>
-    <div class="data-container"></div>
-    <button onclick="nextSlide()" class="continue-button">Continue</button>
-    <div class="tooltip">
-      <span class="tooltiptext">Use arrow keys to navigate</span>
+    <div id="data-container"></div>
+    <div id="filter-container">
+      <label for="year-filter">Filter by Year:</label>
+      <select id="year-filter"></select>
     </div>
+    <button onclick="nextSlide()" class="continue-button">Continue</button>
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <script>
-      const dataContainer = d3.select('#scene1 .data-container');
-      const columns = ['Overall rank', 'Country or region', 'Year', 'Score', 'GDP per capita', 'Social support', 'Healthy life expectancy', 'Freedom to make life choices', 'Generosity', 'Perceptions of corruption'];
+      d3.csv("data/world_happiness.csv").then(function(data) {
+        const dataContainer = d3.select("#scene1 #data-container");
+        const filterContainer = d3.select("#scene1 #filter-container");
+        const yearFilter = d3.select("#scene1 #year-filter");
   
-      d3.csv('data/happiness_report.csv').then(function(data) {
-        console.log(data);
-        const table = dataContainer.append('table');
-        const thead = table.append('thead');
-        const tbody = table.append('tbody');
+        // Extract unique years from data
+        const years = Array.from(new Set(data.map(d => d.Year)));
   
-        thead.append('tr')
-          .selectAll('th')
-          .data(columns)
-          .join('th')
-          .text(column => column);
-  
-        const rows = tbody.selectAll('tr')
-          .data(data)
-          .join('tr');
-  
-        rows.selectAll('td')
-          .data(row => columns.map(column => row[column]))
-          .join('td')
+        // Populate year filter options
+        yearFilter.selectAll("option")
+          .data(years)
+          .join("option")
+          .attr("value", d => d)
           .text(d => d);
+  
+        // Set initial filter value
+        let currentYear = yearFilter.property("value");
+  
+        // Update table when filter is changed
+        yearFilter.on("change", function() {
+          currentYear = this.value;
+          updateTable();
+        });
+  
+        // Create SVG table
+        const table = dataContainer.append("svg")
+          .attr("width", "100%")
+          .attr("height", "100%");
+  
+        const tableHeaders = Object.keys(data[0]);
+        const cellWidth = 100;
+        const cellHeight = 30;
+        const headerHeight = 40;
+        const rowHeight = 30;
+  
+        // Draw table headers
+        const headers = table.append("g")
+          .selectAll("text")
+          .data(tableHeaders)
+          .enter()
+          .append("text")
+          .attr("x", (d, i) => i * cellWidth)
+          .attr("y", headerHeight / 2)
+          .attr("text-anchor", "middle")
+          .text(d => d);
+  
+        // Update table based on current year filter
+        function updateTable() {
+          const filteredData = data.filter(d => d.Year === currentYear);
+  
+          // Draw table rows
+          const rows = table.selectAll(".row")
+            .data(filteredData)
+            .join("g")
+            .attr("class", "row")
+            .attr("transform", (_, i) => `translate(0, ${headerHeight + i * rowHeight})`);
+  
+          // Draw table cells
+          const cells = rows.selectAll("rect")
+            .data(d => Object.values(d))
+            .join("rect")
+            .attr("x", (_, i) => i * cellWidth)
+            .attr("y", 0)
+            .attr("width", cellWidth)
+            .attr("height", cellHeight)
+            .style("fill", "lightgray");
+  
+          // Add text to table cells
+          const cellTexts = rows.selectAll("text")
+            .data(d => Object.values(d))
+            .join("text")
+            .attr("x", (_, i) => i * cellWidth + cellWidth / 2)
+            .attr("y", cellHeight / 2)
+            .attr("text-anchor", "middle")
+            .attr("dominant-baseline", "middle")
+            .text(d => d);
+        }
+  
+        // Initialize table
+        updateTable();
       });
     </script>
-  </div>  
+  </div>    
   
   <!-- Scene 2 Stuffs -->
   <div class="slide" id="scene2">
