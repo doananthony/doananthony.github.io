@@ -39,41 +39,95 @@
     p {
       font-size: 2em;
     }
+
+    .tooltip {
+      position: relative;
+      display: inline-block;
+    }
+
+    .tooltip .tooltiptext {
+      visibility: hidden;
+      width: 200px;
+      background-color: rgba(0, 0, 0, 0.8);
+      color: #fff;
+      text-align: center;
+      border-radius: 6px;
+      padding: 10px;
+      position: absolute;
+      z-index: 1;
+      bottom: 150%;
+      left: 50%;
+      transform: translateX(-50%);
+      opacity: 0;
+      transition: opacity 0.3s ease-in-out;
+    }
+
+    .tooltip:hover .tooltiptext {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    .continue-button {
+      font-size: 1.5em;
+      padding: 0.5em 1em;
+      background-color: #fff;
+      color: #111;
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
+    }
   </style>
 </head>
 <body>
   <div class="slide active" id="welcome">
     <h1>Welcome</h1>
-    <div>
-      <img src="images/world-happiness.jpeg" alt="Smiley Face" width="150"></img>
-      <p>Get ready for an exciting Global Adventure</p>
+    <div class="tooltip">
+      <img src="world-happiness.jpeg" alt="Smiley Face" width="150"></img>
+      <span class="tooltiptext">Tooltip text</span>
     </div>
+    <p>Get ready for an exciting Global Adventure</p>
+    <button onclick="nextSlide()" class="continue-button">Continue</button>
   </div>
 
   <div class="slide" id="scene1">
     <h1>Scene 1</h1>
     <p>Welcome to Scene 1</p>
+    <button onclick="nextSlide()" class="continue-button">Continue</button>
   </div>
 
   <div class="slide" id="scene2">
     <h1>Scene 2</h1>
     <p>Welcome to Scene 2</p>
-  </div>
-
-  <div class="slide" id="scene3">
-    <h1>Thank you!</h1>
-    <p>Have a &#128512; Day!</p>
+    <button onclick="nextSlide()" class="continue-button">Continue</button>
   </div>
 
   <script src="https://d3js.org/d3.v7.min.js"></script>
   <script>
     let currentSlideIndex = 0;
     const slides = d3.selectAll('.slide');
+    const continueButtons = d3.selectAll('.continue-button');
 
     function showSlide(index) {
       slides.filter('.active').classed('active', false);
       slides.filter((d, i) => i === index).classed('active', true);
     }
+
+    continueButtons.on('click', function() {
+      currentSlideIndex = (currentSlideIndex + 1) % slides.size();
+      showSlide(currentSlideIndex);
+    });
+
+    const tooltip = d3.select('.tooltip');
+    const tooltipText = tooltip.select('.tooltiptext');
+
+    tooltip.on('mouseover', function() {
+      tooltipText.style('visibility', 'visible')
+        .style('opacity', 1);
+    })
+    .on('mouseout', function() {
+      tooltipText.style('visibility', 'hidden')
+        .style('opacity', 0);
+    });
 
     document.addEventListener('keydown', function(event) {
       if (event.key === 'ArrowRight') {
