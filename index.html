@@ -1,15 +1,14 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <title>My Slideshow</title>
-</head>
-<body>
-  <h1>Welcome to My Slideshow</h1>
-  <p>Select a scene to begin:</p>
-  <ul>
-    <li><a href="scene1.html">Scene 1</a></li>
-    <li><a href="scene2.html">Scene 2</a></li>
-    <li><a href="scene3.html">Scene 3</a></li>
-  </ul>
-</body>
+<div>
+    <h1>Welcome</h1>
+    <p>Get ready for an exciting Global Adventure</p>
+    <button onclick="goToScene2()">Let's Begin!</button>
+</div>
+
+<script>
+  function goToScene2() {
+    window.location.href = "scene2.html";
+  }
+</script>
 </html>
