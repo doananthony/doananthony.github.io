@@ -1,61 +1,15 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="utf-8">
-  <title>World Happiness Slideshow</title>
-  <style>
-    html,
-    body {
-      margin: 0;
-      padding: 0;
-      height: 100%;
-    }
-    #visualization-container {
-      width: 100%;
-      height: 100%;
-    }
-  </style>
+  <title>My Slideshow</title>
 </head>
 <body>
-  <div id="visualization-container"></div>
-
-  <script src="https://d3js.org/d3.v7.min.js"></script>
-  <script>
-    const scenes = [
-      "scene1.html",
-      "scene2.html",
-      "scene3.html"
-    ];
-
-    let currentSceneIndex = 0;
-
-    function loadScene() {
-      const scenePath = scenes[currentSceneIndex];
-
-      // Clear existing content
-      d3.select("#visualization-container").html("");
-
-      // Load the scene HTML file using fetch()
-      fetch(scenePath)
-        .then(response => response.text())
-        .then(html => {
-          d3.select("#visualization-container").html(html);
-
-          // Button to navigate between scenes
-          const nextButton = d3.select("#nextButton");
-          nextButton.on("click", () => {
-            currentSceneIndex++;
-            if (currentSceneIndex >= scenes.length) {
-              currentSceneIndex = 0;
-            }
-            loadScene();
-          });
-        })
-        .catch(error => console.error(error));
-    }
-
-    // Initial call to load the first scene
-    loadScene();
-  </script>
+  <h1>Welcome to My Slideshow</h1>
+  <p>Select a scene to begin:</p>
+  <ul>
+    <li><a href="scene1.html">Scene 1</a></li>
+    <li><a href="scene2.html">Scene 2</a></li>
+    <li><a href="scene3.html">Scene 3</a></li>
+  </ul>
 </body>
 </html>

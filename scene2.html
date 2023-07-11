@@ -9,7 +9,8 @@
         <select id="year-filter"></select>
       </div>
     </div>
-    <button id="nextButton">Next</button>
+    <button onclick="goToScene1()">Go Back</button>
+    <button onclick="goToScene3()">Continue</button>
     <script>
       const happinessReportData = `Rank,Country,Year,Score,GDP per capita,Social support,Healthy life expectancy,Freedom to make life choices,Generosity,Perceptions of corruption
       154,Afghanistan,2019,3.203,0.35,0.517,0.361,0,0.158,0.025
@@ -324,7 +325,7 @@
       125,Zambia,2018,4.377,0.562,1.047,0.295,0.503,0.221,0.082
       146,Zimbabwe,2019,3.663,0.366,1.114,0.433,0.361,0.151,0.089
       144,Zimbabwe,2018,3.692,0.357,1.094,0.248,0.406,0.132,0.099
-      `
+      `;
 
       const data = d3.csvParse(happinessReportData);
 
@@ -392,10 +393,13 @@
       // Initialize table
       updateTable();
 
-      d3.select("#nextButton").on("click", () => {
-        // Trigger event to advance to next scene
-        parent.loadScene();
-      });
+      function goToScene1() {
+        window.location.href = "scene1.html";
+      }
+
+      function goToScene3() {
+        window.location.href = "scene3.html";
+      }
     </script>
   </div>
 </html>

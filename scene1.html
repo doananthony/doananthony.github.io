@@ -3,13 +3,12 @@
 <div>
     <h1>Welcome</h1>
     <p>Get ready for an exciting Global Adventure</p>
-    <button id="nextButton">Next</button>
+    <button onclick="goToScene2()">Go to Scene 2</button>
 </div>
 
-<script src="https://d3js.org/d3.v7.min.js">
-    d3.select("#nextButton").on("click", () => {
-        // Trigger event to advance to next scene
-        parent.loadScene();
-    });
+<script>
+  function goToScene2() {
+    window.location.href = "scene2.html";
+  }
 </script>
 </html>
