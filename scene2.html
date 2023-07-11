@@ -373,49 +373,8 @@
     // Update table when filter is changed
     yearFilter.on("change", function() {
       currentYear = this.value;
-      updateTable();
+      updatePlot();
     });
-
-    // // Create table container
-    // const tableContainer = dataContainer.append("div")
-    //   .attr("class", "table-container");
-
-    // // Create SVG table
-    // const table = tableContainer.append("table");
-
-    // const tableHeaders = ["Year", "Rank", "Country", "Score"];
-
-    // // Draw table headers
-    // table.append("thead")
-    //   .append("tr")
-    //   .selectAll("th")
-    //   .data(tableHeaders)
-    //   .join("th")
-    //   .text(d => d);
-
-    // const tbody = table.append("tbody");
-
-    // // Update table based on current year filter
-    // function updateTable() {
-    //   const filteredData = data.filter(d => d.Year === currentYear);
-
-    //   // Remove existing table rows
-    //   tbody.selectAll("tr").remove();
-
-    //   // Draw table rows
-    //   const rows = tbody.selectAll("tr")
-    //     .data(filteredData)
-    //     .join("tr");
-
-    //   // Draw table cells
-    //   const cells = rows.selectAll("td")
-    //     .data(d => tableHeaders.map(header => d[header]))
-    //     .join("td")
-    //     .text(d => d);
-    // }
-
-    // // Initialize table
-    // updateTable();
 
     // Create SVG container for the plot
     const plotContainer = dataContainer.append("div")
@@ -534,7 +493,6 @@
 
     // Initialize plot
     updatePlot();
-
 
     function goToScene1() {
       window.location.href = "index.html";
