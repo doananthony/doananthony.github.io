@@ -1,12 +1,16 @@
-<div>
-  <h1>Scene 1</h1>
-  <div id="data-container">
-    <div id="filter-container">
-      <label for="year-filter">Filter by Year:</label>
-      <select id="year-filter"></select>
+<!DOCTYPE html>
+<html>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <div>
+    <h1>Scene 1</h1>
+    <div id="data-container">
+      <div id="filter-container">
+        <label for="year-filter">Filter by Year:</label>
+        <select id="year-filter"></select>
+      </div>
     </div>
     <button id="nextButton">Next</button>
-    <script src="https://d3js.org/d3.v7.min.js">
+    <script>
       d3.csv("data/happiness_report.csv").then(function(data) {
         console.log(data);
         const dataContainer = d3.select("#data-container");
@@ -80,5 +84,4 @@
       });
     </script>
   </div>
-</div>
-  
+</html>

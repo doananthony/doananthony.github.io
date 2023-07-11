@@ -1,12 +1,16 @@
+<!DOCTYPE html>
+<html>
 <div>
     <h1>Scene 2</h1>
     <p>Thanks for stopping by!</p>
     <button id="nextButton">Back to Home</button>
 </div>
 
-<script src="https://d3js.org/d3.v7.min.js">
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script>
     d3.select("#nextButton").on("click", () => {
         // Trigger event to advance to next scene
         parent.loadScene();
     });
 </script>
+</html>
