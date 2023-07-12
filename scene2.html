@@ -353,6 +353,11 @@
 
     const data = d3.csvParse(happinessReportData);
 
+    // Check if data is parsed right
+    console.log(data);
+    const healthyLifeExpectancyColumn = data.map(d => d["Healthy life expectancy"]);
+    console.log(healthyLifeExpectancyColumn);
+
     const dataContainer = d3.select("#data-container");
     const filterContainer = d3.select("#filter-container");
     const yearFilter = d3.select("#year-filter");
