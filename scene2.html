@@ -553,16 +553,19 @@
 
 
     // Map the region to each country
-    const regionMap = new Map(countryRegionData.map(d => [d.Country, d.Region]));
+    const regionMap = new Map();
+      countryRegionData.forEach(d => {
+      regionMap.set(d.Country, d.Region);
+    });
 
     // Get unique regions from countryRegionData
     const regions = Array.from(new Set(countryRegionData.map(d => d.Region)));
 
     // Update color scale for countries based on region
     const colorScale = d3.scaleOrdinal()
-      .domain(regions)
+      .domain(Array.from(regionMap.values()))
       .range(d3.schemeCategory10);
-    
+
     // Get unique countries from data
     const countries = Array.from(new Set(data.map(d => d.Country)));
 
