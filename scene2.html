@@ -636,7 +636,7 @@
       .attr("cx", d => xScale(+d["Healthy life expectancy"]))
       .attr("cy", d => yScale(+d.Score))
       .attr("r", 5)
-      .attr("fill", d => colorScale(d.Country));
+      .attr("fill", d => colorScale(regionMap.get(d.Country))); // Using regionMap to map the correct country to region
 
     // Add tooltip
     const tooltip = plotContainer.append("div")
