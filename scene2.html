@@ -350,8 +350,11 @@
     146,Zimbabwe,Sub-Saharan Africa,2019,3.663,0.366,1.114,0.433,0.361,0.151,0.089
     144,Zimbabwe,Sub-Saharan Africa,2018,3.692,0.357,1.094,0.248,0.406,0.132,0.099
     `;
-    
     const data = d3.csvParse(happinessReportData);
+
+    // Get unique regions and countries from data
+    const regions = Array.from(new Set(data.map(d => d.Region)));
+    const countries = Array.from(new Set(data.map(d => d.Country)));
 
     const dataContainer = d3.select("#data-container");
     const filterContainer = d3.select("#filter-container");
@@ -390,10 +393,6 @@
     const svg = plotContainer.append("svg")
       .attr("width", width + margin.left + margin.right + legendWidth)
       .attr("height", height + margin.top + margin.bottom);
-
-    // Get unique regions and countries from data
-    const regions = Array.from(new Set(data.map(d => d.Region)));
-    const countries = Array.from(new Set(data.map(d => d.Country)));
 
     // Update color scale for countries based on region
     const colorScale = d3.scaleOrdinal()
