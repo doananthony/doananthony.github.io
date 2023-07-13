@@ -513,6 +513,8 @@
     const data = d3.csvParse(happinessReportData);
     const countryRegionData = d3.csvParse(countryRegionMap);
 
+    console.log(countryRegionData);
+
     // Create a map to store the region for each country
     const regionMap = new Map();
       countryRegionData.forEach(d => {
@@ -524,9 +526,6 @@
       const region = regionMap.get(country);
       return { ...d, Region: region };
     });
-
-    console.log(dataWithRegion);
-
 
     const dataContainer = d3.select("#data-container");
     const filterContainer = d3.select("#filter-container");
