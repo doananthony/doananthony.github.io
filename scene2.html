@@ -380,26 +380,19 @@
     const plotContainer = dataContainer.append("div")
       .attr("class", "plot-container");
 
-    // Create a container for the legend
-    const legendContainer = svg.append("g")
-      .attr("class", "legend-container")
-      .attr("transform", `translate(${width + margin.left + margin.right - 200}, ${margin.top})`); // Position the legend on the right
-
     const margin = { top: 50, right: 50, bottom: 50, left: 50 };
     const width = 600 - margin.left - margin.right;
     const height = 400 - margin.top - margin.bottom;
+    const legendWidth = 200;
+    const legendHeight = regions.length * 20;
 
     // Create SVG element for the plot
     const svg = plotContainer.append("svg")
-      .attr("width", width + margin.left + margin.right)
-      .attr("height", height + margin.top + margin.bottom)
-      .append("g")
-      .attr("transform", `translate(${margin.left}, ${margin.top})`);
+      .attr("width", width + margin.left + margin.right + legendWidth)
+      .attr("height", height + margin.top + margin.bottom);
 
-    // Get unique regions from data
+    // Get unique regions and countries from data
     const regions = Array.from(new Set(data.map(d => d.Region)));
-
-    // Get unique countries from data
     const countries = Array.from(new Set(data.map(d => d.Country)));
 
     // Update color scale for countries based on region
@@ -407,28 +400,61 @@
       .domain(regions)
       .range(d3.schemeCategory10);
 
-    // Add legend
-    const legend = legendContainer.selectAll(".legend-item")
-      .data(regions)
+    // Add dots for each data point
+    svg.selectAll("circle")
+      .data(data)
       .enter()
-      .append("g")
-      .attr("class", "legend-item")
-      .attr("transform", (d, i) => `translate(0, ${i * 20})`); // Position each legend item vertically
+      .append("circle")
+      .attr("cx", d => xScale(d["Healthy life expectancy"]))
+      .attr("cy", d => yScale(d.Score))
+      .attr("r", 5)
+      .attr("fill", d => colorScale(d.Region)); // Use color scale to assign color based on region
+
+    // Add tooltip
+    const tooltip = plotContainer.append("div")
+      .attr("class", "tooltip")
+      .style("opacity", 0);
+
+    svg.selectAll("circle")
+      .on("mouseover", function (event, d) {
+        tooltip.transition()
+          .duration(200)
+          .style("opacity", 0.9);
+        tooltip.html(`<br>Country: ${d.Country}<br>Region: ${d.Region}<br>Score: ${d.Score}<br>Healthy Life Expectancy: ${d["Healthy life expectancy"]}`)
+          .style("left", (event.pageX + 10) + "px")
+          .style("top", (event.pageY - 28) + "px");
+      })
+      .on("mouseout", function () {
+        tooltip.transition()
+          .duration(500)
+          .style("opacity", 0);
+      });
+
+    // Create legend
+    const legendContainer = svg.append("g")
+      .attr("class", "legend-container")
+      .attr("transform", `translate(${width + margin.left}, ${margin.top})`); // Position the legend to the right of the chart
 
     // Add color squares to legend
-    legend.append("rect")
+    const colorSquares = legendContainer.selectAll(".color-square")
+      .data(regions)
+      .enter()
+      .append("rect")
       .attr("class", "color-square")
       .attr("x", 0)
-      .attr("y", 0)
+      .attr("y", (d, i) => i * 20)
       .attr("width", 10)
       .attr("height", 10)
       .attr("fill", d => colorScale(d));
 
     // Add region labels to legend
-    legend.append("text")
+    const regionLabels = legendContainer.selectAll(".region-label")
+      .data(regions)
+      .enter()
+      .append("text")
       .attr("class", "region-label")
       .attr("x", 15)
-      .attr("y", 9)
+      .attr("y", (d, i) => i * 20 + 9)
       .text(d => d);
 
     // Set up x and y scales
@@ -466,36 +492,6 @@
       .attr("text-anchor", "middle")
       .text("Score");
 
-    // Add dots for each data point
-    svg.selectAll("circle")
-      .data(data)
-      .enter()
-      .append("circle")
-      .attr("cx", d => xScale(d["Healthy life expectancy"]))
-      .attr("cy", d => yScale(d.Score))
-      .attr("r", 5)
-      .attr("fill", d => colorScale(d.Region)); // Use color scale to assign color based on region
-
-    // Add tooltip
-    const tooltip = plotContainer.append("div")
-      .attr("class", "tooltip")
-      .style("opacity", 0);
-
-    svg.selectAll("circle")
-      .on("mouseover", function (event, d) {
-        tooltip.transition()
-          .duration(200)
-          .style("opacity", 0.9);
-        tooltip.html(`<br>Country: ${d.Country}<br>Region: ${d.Region}<br>Score: ${d.Score}<br>Healthy Life Expectancy: ${d["Healthy life expectancy"]}`)
-          .style("left", (event.pageX + 10) + "px")
-          .style("top", (event.pageY - 28) + "px");
-      })
-      .on("mouseout", function () {
-        tooltip.transition()
-          .duration(500)
-          .style("opacity", 0);
-      });
-
     // Update plot based on current year filter
     function updatePlot() {
       const filteredData = data.filter(d => d.Year === currentYear);
@@ -527,6 +523,7 @@
 
     // Initialize plot
     updatePlot();
+
 
     function goToScene1() {
       window.location.href = "index.html";
