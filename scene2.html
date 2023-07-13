@@ -447,14 +447,12 @@
       .attr("r", 5)
       .attr("fill", d => colorScale(d.Region)); // Use color scale to assign color based on region
 
-    // Create legend
-    const legendContainer = dataContainer.append("div")
-      .attr("class", "legend-container");
+    // Add legend
+    const legendContainer = svg.append("g")
+      .attr("transform", `translate(${width + margin.left + 20}, ${margin.top})`); // Position the legend to the right of the chart
 
-    const legend = legendContainer.append("svg")
-      .attr("class", "legend")
-      .attr("width", 200)
-      .attr("height", regions.length * 20);
+    const legend = legendContainer.append("g")
+      .attr("class", "legend");
 
     // Add color squares to legend
     const colorSquares = legend.selectAll(".color-square")
@@ -462,7 +460,7 @@
       .enter()
       .append("rect")
       .attr("class", "color-square")
-      .attr("x", 10)
+      .attr("x", 0)
       .attr("y", (d, i) => i * 20)
       .attr("width", 10)
       .attr("height", 10)
@@ -474,12 +472,18 @@
       .enter()
       .append("text")
       .attr("class", "region-label")
-      .attr("x", 25)
+      .attr("x", 15)
       .attr("y", (d, i) => i * 20 + 9)
       .text(d => d);
 
-    // Adjust plot container width to accommodate legend
-    plotContainer.style("width", `${width + margin.left + margin.right + 200}px`);
+    // Adjust SVG width to accommodate both the chart and the legend
+    svg.attr("width", width + margin.left + margin.right + 200);
+
+    // Adjust chartContainer width to accommodate the legend
+    chartContainer.attr("width", width);
+
+    // Adjust legendContainer width
+    legendContainer.attr("width", 200);
 
 
     // Add tooltip
