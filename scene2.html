@@ -519,14 +519,14 @@
       regionMap.set(d.Country, d.Region);
     });
 
-    // Add region to happinessData
-    data.forEach(d => {
+    const dataWithRegion = data.map(d => {
       const country = d.Country;
       const region = regionMap.get(country);
-      d.Region = region;
+      return { ...d, Region: region };
     });
 
-    console.log(data);
+    console.log(dataWithRegion);
+
 
     const dataContainer = d3.select("#data-container");
     const filterContainer = d3.select("#filter-container");
