@@ -513,6 +513,19 @@
     const data = d3.csvParse(happinessReportData);
     const countryRegionData = d3.csvParse(countryRegionMap);
 
+     // Create a map to store the region for each country
+     const regionMap = new Map();
+      countryRegionData.forEach(d => {
+      regionMap.set(d.Country, d.Region);
+    });
+
+    // Add region to happinessData
+    data.forEach(d => {
+      const country = d.Country;
+      const region = regionMap.get(country);
+      d.Region = region;
+    });
+
     const dataContainer = d3.select("#data-container");
     const filterContainer = d3.select("#filter-container");
     const yearFilter = d3.select("#year-filter");
@@ -550,13 +563,6 @@
       .attr("height", height + margin.top + margin.bottom)
       .append("g")
       .attr("transform", `translate(${margin.left}, ${margin.top})`);
-
-
-    // Map the region to each country
-    const regionMap = new Map();
-      countryRegionData.forEach(d => {
-      regionMap.set(d.Country, d.Region);
-    });
 
     // Get unique regions from countryRegionData
     const regions = Array.from(new Set(countryRegionData.map(d => d.Region)));
