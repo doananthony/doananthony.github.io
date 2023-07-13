@@ -394,20 +394,13 @@
     // Get unique regions from data
     const regions = Array.from(new Set(data.map(d => d.Region)));
 
+    // Get unique countries from data
+    const countries = Array.from(new Set(data.map(d => d.Country)));
+
     // Update color scale for countries based on region
     const colorScale = d3.scaleOrdinal()
       .domain(regions)
       .range(d3.schemeCategory10);
-
-    // Add dots for each data point
-    svg.selectAll("circle")
-      .data(data)
-      .enter()
-      .append("circle")
-      .attr("cx", d => xScale(d["Healthy life expectancy"]))
-      .attr("cy", d => yScale(d.Score))
-      .attr("r", 5)
-      .attr("fill", d => colorScale(d.Region)); // Use color scale to assign color based on region
 
     // Set up x and y scales
     const xScale = d3.scaleLinear()
@@ -444,15 +437,16 @@
       .attr("text-anchor", "middle")
       .text("Score");
 
+
     // Add dots for each data point
-    svg.selectAll("circle")
+     svg.selectAll("circle")
       .data(data)
       .enter()
       .append("circle")
-      .attr("cx", d => xScale(+d["Healthy life expectancy"]))
-      .attr("cy", d => yScale(+d.Score))
+      .attr("cx", d => xScale(d["Healthy life expectancy"]))
+      .attr("cy", d => yScale(d.Score))
       .attr("r", 5)
-      .attr("fill", d => colorScale(d.Region)); // Using 'Region' property directly
+      .attr("fill", d => colorScale(d.Region)); // Use color scale to assign color based on region
 
     // Add tooltip
     const tooltip = plotContainer.append("div")
