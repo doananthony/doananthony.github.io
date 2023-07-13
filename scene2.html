@@ -617,7 +617,7 @@
       .attr("cx", d => xScale(+d["Healthy life expectancy"]))
       .attr("cy", d => yScale(+d.Score))
       .attr("r", 5)
-      .attr("fill", d => colorScale(regionMap.get(d.Country))); // Using regionMap to map the correct country to region
+      .attr("fill", d => colorScale(d.Region)); // Using 'Region' property directly
 
     // Add tooltip
     const tooltip = plotContainer.append("div")
@@ -665,7 +665,7 @@
         .duration(500)
         .attr("cx", d => xScale(+d["Healthy life expectancy"]))
         .attr("cy", d => yScale(+d.Score))
-        .attr("fill", d => colorScale(regionMap.get(d.Country))); // Update fill color based on region
+        .attr("fill", d => colorScale(d.Region)); // Update fill color based on region
     }
 
     // Initialize plot
