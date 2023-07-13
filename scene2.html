@@ -510,174 +510,174 @@
       Zimbabwe,Sub-Saharan Africa
       `;
 
-      const data = d3.csvParse(happinessReportData);
-      const countryRegionData = d3.csvParse(countryRegionMap);
+    const data = d3.csvParse(happinessReportData);
+    const countryRegionData = d3.csvParse(countryRegionMap);
 
-      // Create a map to store the region for each country
-      const regionMap = new Map();
-      countryRegionData.forEach(d => {
-        regionMap.set(d.Country, d.Region);
+    // Create a map to store the region for each country
+    const regionMap = new Map();
+    countryRegionData.forEach(d => {
+      regionMap.set(d.Country, d.Region);
+    });
+
+    // Add region to happinessData
+    data.forEach(d => {
+      const country = d.Country;
+      const region = regionMap.get(country);
+      d.Region = region;
+    });
+
+    console.log(data);
+
+    const dataContainer = d3.select("#data-container");
+    const filterContainer = d3.select("#filter-container");
+    const yearFilter = d3.select("#year-filter");
+
+    // Extract unique years from data
+    const years = Array.from(new Set(data.map(d => d.Year)));
+
+    // Populate year filter options
+    yearFilter.selectAll("option")
+      .data(years)
+      .join("option")
+      .attr("value", d => d)
+      .text(d => d);
+
+    // Set initial filter value
+    let currentYear = yearFilter.property("value");
+
+    // Update table when filter is changed
+    yearFilter.on("change", function () {
+      currentYear = this.value;
+      updatePlot();
+    });
+
+    // Create SVG container for the plot
+    const plotContainer = dataContainer.append("div")
+      .attr("class", "plot-container");
+
+    const margin = { top: 50, right: 50, bottom: 50, left: 50 };
+    const width = 600 - margin.left - margin.right;
+    const height = 400 - margin.top - margin.bottom;
+
+    // Create SVG element for the plot
+    const svg = plotContainer.append("svg")
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom)
+      .append("g")
+      .attr("transform", `translate(${margin.left}, ${margin.top})`);
+
+    // Get unique regions from countryRegionData
+    const regions = Array.from(new Set(countryRegionData.map(d => d.Region)));
+
+    // Update color scale for countries based on region
+    const colorScale = d3.scaleOrdinal()
+      .domain(regions)
+      .range(d3.schemeCategory10);
+
+    // Set up x and y scales
+    const xScale = d3.scaleLinear()
+      .domain(d3.extent(data, d => +d["Healthy life expectancy"]))
+      .range([0, width]);
+
+    const yScale = d3.scaleLinear()
+      .domain(d3.extent(data, d => +d.Score))
+      .range([height, 0]);
+
+    // Create x and y axes
+    const xAxis = d3.axisBottom(xScale);
+    const yAxis = d3.axisLeft(yScale);
+
+    // Add x axis
+    svg.append("g")
+      .attr("class", "x-axis")
+      .attr("transform", `translate(0, ${height})`)
+      .call(xAxis)
+      .append("text")
+      .attr("x", width / 2)
+      .attr("y", 40)
+      .attr("text-anchor", "middle")
+      .text("Healthy Life Expectancy");
+
+    // Add y axis
+    svg.append("g")
+      .attr("class", "y-axis")
+      .call(yAxis)
+      .append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("x", -height / 2)
+      .attr("y", -40)
+      .attr("text-anchor", "middle")
+      .text("Score");
+
+    // Add dots for each data point
+    svg.selectAll("circle")
+      .data(data)
+      .enter()
+      .append("circle")
+      .attr("cx", d => xScale(+d["Healthy life expectancy"]))
+      .attr("cy", d => yScale(+d.Score))
+      .attr("r", 5)
+      .attr("fill", d => colorScale(regionMap.get(d.Country))); // Using regionMap to map the correct country to region
+
+    // Add tooltip
+    const tooltip = plotContainer.append("div")
+      .attr("class", "tooltip")
+      .style("opacity", 0);
+
+    svg.selectAll("circle")
+      .on("mouseover", function (event, d) {
+        tooltip.transition()
+          .duration(200)
+          .style("opacity", 0.9);
+        tooltip.html(`<br>Country: ${d.Country}<br>Region: ${d.Region}<br>Score: ${d.Score}<br>Healthy Life Expectancy: ${d["Healthy life expectancy"]}`)
+          .style("left", (event.pageX + 10) + "px")
+          .style("top", (event.pageY - 28) + "px");
+      })
+      .on("mouseout", function () {
+        tooltip.transition()
+          .duration(500)
+          .style("opacity", 0);
       });
 
-      // Add region to happinessData
-      data.forEach(d => {
-        const country = d.Country;
-        const region = regionMap.get(country);
-        d.Region = region;
-      });
+    // Update plot based on current year filter
+    function updatePlot() {
+      const filteredData = data.filter(d => d.Year === currentYear);
 
-      console.log(data);
+      // Update x and y scales based on filtered data
+      xScale.domain(d3.extent(filteredData, d => +d["Healthy life expectancy"]));
+      yScale.domain(d3.extent(filteredData, d => +d.Score));
 
-      const dataContainer = d3.select("#data-container");
-      const filterContainer = d3.select("#filter-container");
-      const yearFilter = d3.select("#year-filter");
+      // Update x and y axes
+      svg.select(".x-axis")
+        .transition()
+        .duration(500)
+        .call(xAxis);
 
-      // Extract unique years from data
-      const years = Array.from(new Set(data.map(d => d.Year)));
+      svg.select(".y-axis")
+        .transition()
+        .duration(500)
+        .call(yAxis);
 
-      // Populate year filter options
-      yearFilter.selectAll("option")
-        .data(years)
-        .join("option")
-        .attr("value", d => d)
-        .text(d => d);
-
-      // Set initial filter value
-      let currentYear = yearFilter.property("value");
-
-      // Update table when filter is changed
-      yearFilter.on("change", function () {
-        currentYear = this.value;
-        updatePlot();
-      });
-
-      // Create SVG container for the plot
-      const plotContainer = dataContainer.append("div")
-        .attr("class", "plot-container");
-
-      const margin = { top: 50, right: 50, bottom: 50, left: 50 };
-      const width = 600 - margin.left - margin.right;
-      const height = 400 - margin.top - margin.bottom;
-
-      // Create SVG element for the plot
-      const svg = plotContainer.append("svg")
-        .attr("width", width + margin.left + margin.right)
-        .attr("height", height + margin.top + margin.bottom)
-        .append("g")
-        .attr("transform", `translate(${margin.left}, ${margin.top})`);
-
-      // Get unique regions from countryRegionData
-      const regions = Array.from(new Set(countryRegionData.map(d => d.Region)));
-
-      // Update color scale for countries based on region
-      const colorScale = d3.scaleOrdinal()
-        .domain(regions)
-        .range(d3.schemeCategory10);
-
-      // Set up x and y scales
-      const xScale = d3.scaleLinear()
-        .domain(d3.extent(data, d => +d["Healthy life expectancy"]))
-        .range([0, width]);
-
-      const yScale = d3.scaleLinear()
-        .domain(d3.extent(data, d => +d.Score))
-        .range([height, 0]);
-
-      // Create x and y axes
-      const xAxis = d3.axisBottom(xScale);
-      const yAxis = d3.axisLeft(yScale);
-
-      // Add x axis
-      svg.append("g")
-        .attr("class", "x-axis")
-        .attr("transform", `translate(0, ${height})`)
-        .call(xAxis)
-        .append("text")
-        .attr("x", width / 2)
-        .attr("y", 40)
-        .attr("text-anchor", "middle")
-        .text("Healthy Life Expectancy");
-
-      // Add y axis
-      svg.append("g")
-        .attr("class", "y-axis")
-        .call(yAxis)
-        .append("text")
-        .attr("transform", "rotate(-90)")
-        .attr("x", -height / 2)
-        .attr("y", -40)
-        .attr("text-anchor", "middle")
-        .text("Score");
-
-      // Add dots for each data point
+      // Update dots
       svg.selectAll("circle")
-        .data(data)
-        .enter()
-        .append("circle")
+        .data(filteredData)
+        .transition()
+        .duration(500)
         .attr("cx", d => xScale(+d["Healthy life expectancy"]))
         .attr("cy", d => yScale(+d.Score))
-        .attr("r", 5)
-        .attr("fill", d => colorScale(regionMap.get(d.Country))); // Using regionMap to map the correct country to region
+        .attr("fill", d => colorScale(regionMap.get(d.Country))); // Update fill color based on region
+    }
 
-      // Add tooltip
-      const tooltip = plotContainer.append("div")
-        .attr("class", "tooltip")
-        .style("opacity", 0);
+    // Initialize plot
+    updatePlot();
 
-      svg.selectAll("circle")
-        .on("mouseover", function (event, d) {
-          tooltip.transition()
-            .duration(200)
-            .style("opacity", 0.9);
-          tooltip.html(`<br>Country: ${d.Country}<br>Region: ${d.Region}<br>Score: ${d.Score}<br>Healthy Life Expectancy: ${d["Healthy life expectancy"]}`)
-            .style("left", (event.pageX + 10) + "px")
-            .style("top", (event.pageY - 28) + "px");
-        })
-        .on("mouseout", function () {
-          tooltip.transition()
-            .duration(500)
-            .style("opacity", 0);
-        });
+    function goToScene1() {
+      window.location.href = "index.html";
+    }
 
-      // Update plot based on current year filter
-      function updatePlot() {
-        const filteredData = data.filter(d => d.Year === currentYear);
-
-        // Update x and y scales based on filtered data
-        xScale.domain(d3.extent(filteredData, d => +d["Healthy life expectancy"]));
-        yScale.domain(d3.extent(filteredData, d => +d.Score));
-
-        // Update x and y axes
-        svg.select(".x-axis")
-          .transition()
-          .duration(500)
-          .call(xAxis);
-
-        svg.select(".y-axis")
-          .transition()
-          .duration(500)
-          .call(yAxis);
-
-        // Update dots
-        svg.selectAll("circle")
-          .data(filteredData)
-          .transition()
-          .duration(500)
-          .attr("cx", d => xScale(+d["Healthy life expectancy"]))
-          .attr("cy", d => yScale(+d.Score))
-          .attr("fill", d => colorScale(regionMap.get(d.Country))); // Update fill color based on region
-      }
-
-      // Initialize plot
-      updatePlot();
-
-      function goToScene1() {
-        window.location.href = "index.html";
-      }
-
-      function goToScene3() {
-        window.location.href = "scene3.html";
-      }
+    function goToScene3() {
+      window.location.href = "scene3.html";
+    }
 
   </script>
 </div>
