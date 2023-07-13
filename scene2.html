@@ -398,6 +398,15 @@
     const colorScale = d3.scaleOrdinal()
       .domain(regions)
       .range(d3.schemeCategory10);
+    
+    // Set up x and y scales
+    const xScale = d3.scaleLinear()
+      .domain(d3.extent(data, d => +d["Healthy life expectancy"]))
+      .range([0, width]);
+
+    const yScale = d3.scaleLinear()
+      .domain(d3.extent(data, d => +d.Score))
+      .range([height, 0]);
 
     // Add dots for each data point
     svg.selectAll("circle")
@@ -455,15 +464,6 @@
       .attr("x", 15)
       .attr("y", (d, i) => i * 20 + 9)
       .text(d => d);
-
-    // Set up x and y scales
-    const xScale = d3.scaleLinear()
-      .domain(d3.extent(data, d => +d["Healthy life expectancy"]))
-      .range([0, width]);
-
-    const yScale = d3.scaleLinear()
-      .domain(d3.extent(data, d => +d.Score))
-      .range([height, 0]);
 
     // Create x and y axes
     const xAxis = d3.axisBottom(xScale);
