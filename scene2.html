@@ -391,8 +391,8 @@
       .append("g")
       .attr("transform", `translate(${margin.left}, ${margin.top})`);
 
-    // Get unique regions from countryRegionData
-    const regions = Array.from(new Set(countryRegionData.map(d => d.Region)));
+    // Get unique regions from data
+    const regions = Array.from(new Set(data.map(d => d.Region)));
 
     // Update color scale for countries based on region
     const colorScale = d3.scaleOrdinal()
