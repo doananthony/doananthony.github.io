@@ -401,7 +401,7 @@
 
     // Add dots for each data point
     svg.selectAll("circle")
-      .data(happinessReportData)
+      .data(data)
       .enter()
       .append("circle")
       .attr("cx", d => xScale(d["Healthy life expectancy"]))
