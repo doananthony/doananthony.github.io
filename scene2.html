@@ -402,6 +402,33 @@
       .domain(regions)
       .range(d3.schemeCategory10);
 
+    // Add legend
+    const legendContainer = svg.append("g")
+      .attr("class", "legend-container")
+      .attr("transform", `translate(${margin.left}, ${margin.top - 30})`); // Position the legend above the chart
+
+    // Add color squares to legend
+    const colorSquares = legendContainer.selectAll(".color-square")
+      .data(regions)
+      .enter()
+      .append("rect")
+      .attr("class", "color-square")
+      .attr("x", (d, i) => i * 80)
+      .attr("y", 0)
+      .attr("width", 10)
+      .attr("height", 10)
+      .attr("fill", d => colorScale(d));
+
+    // Add region labels to legend
+    const regionLabels = legendContainer.selectAll(".region-label")
+      .data(regions)
+      .enter()
+      .append("text")
+      .attr("class", "region-label")
+      .attr("x", (d, i) => i * 80 + 15)
+      .attr("y", 9)
+      .text(d => d);
+
     // Set up x and y scales
     const xScale = d3.scaleLinear()
       .domain(d3.extent(data, d => +d["Healthy life expectancy"]))
@@ -447,33 +474,6 @@
       .attr("r", 5)
       .attr("fill", d => colorScale(d.Region)); // Use color scale to assign color based on region
 
-    // Add legend
-    const legend = svg.append("g")
-      .attr("class", "legend")
-      .attr("transform", `translate(${width + margin.left + 20}, ${margin.top})`); // Position the legend to the right of the chart
-
-    // Add color squares to legend
-    const colorSquares = legend.selectAll(".color-square")
-      .data(regions)
-      .enter()
-      .append("rect")
-      .attr("class", "color-square")
-      .attr("x", 0)
-      .attr("y", (d, i) => i * 20)
-      .attr("width", 10)
-      .attr("height", 10)
-      .attr("fill", d => colorScale(d));
-
-    // Add region labels to legend
-    const regionLabels = legend.selectAll(".region-label")
-      .data(regions)
-      .enter()
-      .append("text")
-      .attr("class", "region-label")
-      .attr("x", 15)
-      .attr("y", (d, i) => i * 20 + 9)
-      .text(d => d);
-    
     // Add tooltip
     const tooltip = plotContainer.append("div")
       .attr("class", "tooltip")
