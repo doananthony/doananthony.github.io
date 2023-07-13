@@ -380,6 +380,11 @@
     const plotContainer = dataContainer.append("div")
       .attr("class", "plot-container");
 
+    // Create a container for the legend
+    const legendContainer = svg.append("g")
+      .attr("class", "legend-container")
+      .attr("transform", `translate(${width + margin.left + margin.right - 200}, ${margin.top})`); // Position the legend on the right
+
     const margin = { top: 50, right: 50, bottom: 50, left: 50 };
     const width = 600 - margin.left - margin.right;
     const height = 400 - margin.top - margin.bottom;
@@ -403,29 +408,26 @@
       .range(d3.schemeCategory10);
 
     // Add legend
-    const legendContainer = svg.append("g")
-      .attr("class", "legend-container")
-      .attr("transform", `translate(${margin.left}, ${margin.top - 30})`); // Position the legend above the chart
-
-    // Add color squares to legend
-    const colorSquares = legendContainer.selectAll(".color-square")
+    const legend = legendContainer.selectAll(".legend-item")
       .data(regions)
       .enter()
-      .append("rect")
+      .append("g")
+      .attr("class", "legend-item")
+      .attr("transform", (d, i) => `translate(0, ${i * 20})`); // Position each legend item vertically
+
+    // Add color squares to legend
+    legend.append("rect")
       .attr("class", "color-square")
-      .attr("x", (d, i) => i * 80)
+      .attr("x", 0)
       .attr("y", 0)
       .attr("width", 10)
       .attr("height", 10)
       .attr("fill", d => colorScale(d));
 
     // Add region labels to legend
-    const regionLabels = legendContainer.selectAll(".region-label")
-      .data(regions)
-      .enter()
-      .append("text")
+    legend.append("text")
       .attr("class", "region-label")
-      .attr("x", (d, i) => i * 80 + 15)
+      .attr("x", 15)
       .attr("y", 9)
       .text(d => d);
 
