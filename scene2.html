@@ -437,9 +437,8 @@
       .attr("text-anchor", "middle")
       .text("Score");
 
-
     // Add dots for each data point
-     svg.selectAll("circle")
+    svg.selectAll("circle")
       .data(data)
       .enter()
       .append("circle")
@@ -447,6 +446,41 @@
       .attr("cy", d => yScale(d.Score))
       .attr("r", 5)
       .attr("fill", d => colorScale(d.Region)); // Use color scale to assign color based on region
+
+    // Create legend
+    const legendContainer = dataContainer.append("div")
+      .attr("class", "legend-container");
+
+    const legend = legendContainer.append("svg")
+      .attr("class", "legend")
+      .attr("width", 200)
+      .attr("height", regions.length * 20);
+
+    // Add color squares to legend
+    const colorSquares = legend.selectAll(".color-square")
+      .data(regions)
+      .enter()
+      .append("rect")
+      .attr("class", "color-square")
+      .attr("x", 10)
+      .attr("y", (d, i) => i * 20)
+      .attr("width", 10)
+      .attr("height", 10)
+      .attr("fill", d => colorScale(d));
+
+    // Add region labels to legend
+    const regionLabels = legend.selectAll(".region-label")
+      .data(regions)
+      .enter()
+      .append("text")
+      .attr("class", "region-label")
+      .attr("x", 25)
+      .attr("y", (d, i) => i * 20 + 9)
+      .text(d => d);
+
+    // Adjust plot container width to accommodate legend
+    plotContainer.style("width", `${width + margin.left + margin.right + 200}px`);
+
 
     // Add tooltip
     const tooltip = plotContainer.append("div")
