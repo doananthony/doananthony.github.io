@@ -26,7 +26,7 @@
 </head>
 <script src="https://d3js.org/d3.v7.min.js"></script>
 <div>
-  <h1>Scene 1</h1>
+  <h1>Does Happiness Result in a Healthy Life Expectancy?</h1>
   <div id="data-container">
     <div id="filter-container">
       <label for="year-filter">Filter by Year:</label>
@@ -511,7 +511,7 @@
     `;
     
     const data = d3.csvParse(happinessReportData);
-    const countryRegiondata = d3.csvParse(countryRegionMap);
+    const countryRegionData = d3.csvParse(countryRegionMap);
 
     // Create a map to store the region for each country
     const regionMap = new Map();
