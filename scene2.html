@@ -448,11 +448,9 @@
       .attr("fill", d => colorScale(d.Region)); // Use color scale to assign color based on region
 
     // Add legend
-    const legendContainer = svg.append("g")
+    const legend = svg.append("g")
+      .attr("class", "legend")
       .attr("transform", `translate(${width + margin.left + 20}, ${margin.top})`); // Position the legend to the right of the chart
-
-    const legend = legendContainer.append("g")
-      .attr("class", "legend");
 
     // Add color squares to legend
     const colorSquares = legend.selectAll(".color-square")
@@ -475,17 +473,7 @@
       .attr("x", 15)
       .attr("y", (d, i) => i * 20 + 9)
       .text(d => d);
-
-    // Adjust SVG width to accommodate both the chart and the legend
-    svg.attr("width", width + margin.left + margin.right + 200);
-
-    // Adjust chartContainer width to accommodate the legend
-    chartContainer.attr("width", width);
-
-    // Adjust legendContainer width
-    legendContainer.attr("width", 200);
-
-
+    
     // Add tooltip
     const tooltip = plotContainer.append("div")
       .attr("class", "tooltip")
