@@ -2,23 +2,25 @@
 <html>
 <head>
   <style>
-    body {
+       body {
       font-family: Arial, sans-serif;
       text-align: center;
+      background-color: #f7f7f7;
       margin: 0;
-      padding: 0;
+      padding: 20px;
     }
-    div {
-      margin-top: 20px;
-    }
+
     h1 {
-      font-size: 24px;
-      margin-bottom: 10px;
+      font-size: 28px;
+      margin-bottom: 20px;
     }
+
     p {
       font-size: 18px;
-      margin-bottom: 10px;
+      line-height: 1.5;
+      margin-bottom: 20px;
     }
+
     button {
       font-size: 16px;
       padding: 10px 20px;
@@ -27,8 +29,17 @@
       cursor: pointer;
       margin: 10px;
     }
+
     #data-container {
       margin-bottom: 20px;
+    }
+    .container {
+      max-width: 1800px;
+      margin: 0 auto;
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
     .tooltip {
       position: absolute;
@@ -43,7 +54,7 @@
   </style>
 </head>
 <script src="https://d3js.org/d3.v7.min.js"></script>
-<div>
+<div class="container">
   <h1>Does Happiness Result in a Healthy Life Expectancy?</h1>
   <p>
     We first begin by understanding the correlation between happiness and healthy life expectancy across different countries and years. 
@@ -54,9 +65,6 @@
     By filtering the chart based on different years, we can observe how these factors have changed over time. 
     The chart presents each country as a data point, with the x-axis representing healthy life expectancy and the y-axis representing the happiness score. 
     The color-coded legend on the right indicates the different regions to which the countries belong. 
-  </p>
-  <p>
-    Hover over each data point to view detailed information about a country to gain a deeper understanding of the relationship between happiness and healthy life expectancy.
   </p>
   <div id="data-container">
     <div id="filter-container">
@@ -520,9 +528,29 @@
       .attr("x", 15)
       .attr("y", (d, i) => i * 20 + 9)
       .text(d => d);
+
+    // Create annotation 
+    const annotation = svg.append("g")
+      .attr("class", "annotation")
+      .attr("transform", `translate(${margin.left + 30}, ${margin.top + 10})`); // Adjust the position of the annotation
+
+    // Add text
+    const text = annotation.append("text")
+      .attr("class", "text")
+      .text("Hover over a data point for detailed information")
+      .style("font-family", "Arial, sans-serif")
+      .style("font-size", "14px")
+      .style("background-color", "white")
+      .style("padding", "10px")
+      .style("border", "1px solid black");
+
+    // Arrow next to the text to indicate they can hover over it
+    const arrow = annotation.append("path")
+      .attr("class", "arrow")
+      .attr("d", "M0,0 L10,0 L5,10 Z")
+      .attr("transform", `translate(${text.node().getBBox().width + 5}, 0)`);
     
     // Add tooltip
-    // Create tooltip container
     const tooltip = d3
       .select("body")
       .append("div")
