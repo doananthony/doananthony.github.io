@@ -383,7 +383,7 @@
     const plotContainer = dataContainer.append("div")
       .attr("class", "plot-container");
 
-    const margin = { top: 50, right: 200, bottom: 50, left: 70 };
+    const margin = { top: 50, right: 50, bottom: 50, left: 50 };
     const width = 600 - margin.left - margin.right;
     const height = 400 - margin.top - margin.bottom;
     const legendWidth = 200;
@@ -393,6 +393,11 @@
     const svg = plotContainer.append("svg")
       .attr("width", width + margin.left + margin.right + legendWidth)
       .attr("height", height + margin.top + margin.bottom);
+
+  
+    // Create a group for the chart
+    const chartContainer = svg.append("g")
+      .attr("transform", `translate(${margin.left}, ${margin.top})`);
 
     // Update color scale for countries based on region
     const colorScale = d3.scaleOrdinal()
@@ -408,8 +413,34 @@
       .domain(d3.extent(data, d => +d.Score))
       .range([height, 0]);
 
+    // Create x and y axes
+    const xAxis = d3.axisBottom(xScale);
+    const yAxis = d3.axisLeft(yScale);
+
+    // Add x axis
+    chartContainer.append("g")
+      .attr("class", "x-axis")
+      .attr("transform", `translate(0, ${height})`)
+      .call(xAxis)
+      .append("text")
+      .attr("x", width / 2)
+      .attr("y", 40)
+      .attr("text-anchor", "middle")
+      .text("Healthy Life Expectancy");
+
+    // Add y axis
+    chartContainer.append("g")
+      .attr("class", "y-axis")
+      .call(yAxis)
+      .append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("x", -height / 2)
+      .attr("y", -margin.left + 20) // Adjusted y position
+      .attr("text-anchor", "middle")
+      .text("Score");
+
     // Add dots for each data point
-    svg.selectAll("circle")
+    chartContainer.selectAll("circle")
       .data(data)
       .enter()
       .append("circle")
@@ -464,33 +495,7 @@
       .attr("x", 15)
       .attr("y", (d, i) => i * 20 + 9)
       .text(d => d);
-
-    // Create x and y axes
-    const xAxis = d3.axisBottom(xScale);
-    const yAxis = d3.axisLeft(yScale);
-
-    // Add x axis
-    svg.append("g")
-      .attr("class", "x-axis")
-      .attr("transform", `translate(0, ${height})`)
-      .call(xAxis)
-      .append("text")
-      .attr("x", width / 2)
-      .attr("y", 40)
-      .attr("text-anchor", "middle")
-      .text("Healthy Life Expectancy");
-
-    // Add y axis
-    svg.append("g")
-      .attr("class", "y-axis")
-      .call(yAxis)
-      .append("text")
-      .attr("transform", "rotate(-90)")
-      .attr("x", -height / 2)
-      .attr("y", -40)
-      .attr("text-anchor", "middle")
-      .text("Score");
-
+    
     // Update plot based on current year filter
     function updatePlot() {
       const filteredData = data.filter(d => d.Year === currentYear);
