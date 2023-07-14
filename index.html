@@ -24,13 +24,60 @@
       border: 1px solid #ccc;
       cursor: pointer;
     }
+    .container {
+      max-width: 1800px;
+      margin: 0 auto;
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .button:hover {
+      opacity: 0.8;
+    }
+
+    .button-container {
+      display: flex;
+      justify-content: center;
+      margin-top: 20px;
+      opacity: 0;
+      animation: fade-in 0.6s ease-in-out forwards;
+    }
+
+    @keyframes fade-in {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
   </style>
 </head>
-<div>
-    <h1>Welcome</h1>
-    <p>Get ready for an exciting Global Adventure</p>
-    <button onclick="goTohappyAndHealthy()">Let's Begin!</button>
-</div>
+<body>
+  <div class="container">
+    <h1>Exploring World Happiness</h1>
+    <p>
+      Welcome to our interactive slideshow visual on world happiness! In this journey, we'll explore the happiness levels
+      of different countries around the globe and examine various aspects that contribute to overall well-being.
+    </p>
+    <p>
+      Happiness is a complex and multidimensional concept. It encompasses not only subjective feelings of joy and
+      satisfaction but also objective factors like health, economic stability, social support, and more.
+    </p>
+    <p>
+      Through interactive charts and insightful data analysis, we'll delve into the factors that influence happiness
+      and uncover fascinating trends and patterns across different regions and years. Get ready to embark on this
+      exciting adventure of understanding global happiness!
+    </p>
+    <div class="button-container">
+      <button onclick="goTohappyAndHealthy()">Let's Begin!</button>
+    </div>
+  </div>
+</body>
 
 <script>
   function goTohappyAndHealthy() {
