@@ -22,6 +22,9 @@
             border: 1px solid #ccc;
             cursor: pointer;
         }
+        .chart-container {
+            margin-top: 50px;
+        }
     </style>
 </head>
 <body>
@@ -30,6 +33,14 @@
     <p>Thanks for stopping by!</p>
     <button onclick="goTohappyAndHealthy()">Go Back</button>
     <button onclick="goToScene1()">Back to Beginning</button>
+</div>
+
+<div id="data-container">
+    <div id="filter-container">
+        <label for="year-filter">Filter by Year:</label>
+        <select id="year-filter"></select>
+    </div>
+    <div class="chart-container"></div>
 </div>
 
 <script src="https://d3js.org/d3.v7.min.js"></script>
@@ -84,8 +95,7 @@
     });
 
     // Create SVG container for the chart
-    const chartContainer = dataContainer.append("div")
-      .attr("class", "chart-container");
+    const chartContainer = dataContainer.select(".chart-container");
 
     const margin = { top: 50, right: 50, bottom: 50, left: 100 };
     const width = 600 - margin.left - margin.right;
