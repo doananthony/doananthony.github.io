@@ -34,10 +34,10 @@
       margin-bottom: 20px;
     }
     .container {
-      max-width: 1800px;
+      max-width: 1600px;
       margin: 0 auto;
       background-color: #fff;
-      padding: 20px;
+      padding: 10px;
       border-radius: 8px;
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
@@ -72,8 +72,8 @@
       <select id="year-filter"></select>
     </div>
   </div>
-  <button onclick="goToScene1()">Go Back</button>
-  <button onclick="goToScene3()">Continue</button>
+  <button onclick="goToTopTenHappiestCountries()">Go Back</button>
+  <button onclick="goToScene1()">Back to Beginning</button>
   <script>
     // Happiness Report Data with Region Mapped
     const happinessReportData = `Rank,Country,Region,Year,Score,GDP per capita,Social support,Healthy life expectancy,Freedom to make life choices,Generosity,Perceptions of corruption
@@ -399,7 +399,7 @@
     const regions = Array.from(new Set(data.map(d => d.Region)));
     const countries = Array.from(new Set(data.map(d => d.Country)));
 
-    // Getting the id for each container/filter
+    // Getting the id for each container/filter to add components to it
     const dataContainer = d3.select("#data-container");
     const filterContainer = d3.select("#filter-container");
     const yearFilter = d3.select("#year-filter");
@@ -608,8 +608,8 @@
       window.location.href = "index.html";
     }
 
-    function goToScene3() {
-      window.location.href = "scene3.html";
+    function goToTopTenHappiestCountries() {
+      window.location.href = "topTenHappiestCountries.html";
     }
 
   </script>

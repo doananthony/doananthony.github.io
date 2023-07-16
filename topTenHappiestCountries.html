@@ -22,14 +22,21 @@
             border: 1px solid #ccc;
             cursor: pointer;
         }
-        .chart-container {
-            margin-top: 50px;
+        .arrow {
+          z-index: 1;
+          transform: rotate(180deg);
         }
-         .container {
-          max-width: 1800px;
+        .chart-container {
+            margin-top: 1px;
+        }
+        .data-container {
+            margin-top: 1px;
+        }
+        .container {
+          max-width: 1600px;
           margin: 0 auto;
           background-color: #fff;
-          padding: 20px;
+          padding: 10px;
           border-radius: 8px;
           box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
@@ -47,17 +54,32 @@
 <script src="https://d3js.org/d3.v7.min.js"></script>
 <div class="container">
   <h1>Top Ten Happiest Countries</h1>
-  <p>Let's take a look into the top ten ranked happiest countries in the last two years</p>
+  <p>
+    Let's begin by taking a look at the top ten ranked happiest countries in 2018 and 2019. 
+    The chart below provides the Top 10 Happiest Countries in the two years. 
+    It provides valuable insights into the happiness scores and factors contributing to happiness in these countries.
+  </p>
+  <p>
+    The chart allows us to compare the happiness scores across different nations, highlighting the countries that rank the highest in terms of overall happiness. 
+    Additionally, the chart presents key indicators such as GDP per capita, social support, healthy life expectancy, freedom to make life choices, generosity, 
+    and perceptions of corruption, shedding light on the various factors that contribute to happiness. 
+    By analyzing this data, we can gain a deeper understanding of the elements that contribute to a nation's happiness and well-being.
+  </p>
   <div id="data-container">
     <div id="filter-container">
-        <h1>Top Ten Happiest Countries</h1>
         <label for="year-filter">Filter by Year:</label>
         <select id="year-filter"></select>
     </div>
     <div class="chart-container"></div> 
   </div>
-  <button onclick="goTohappyAndHealthy()">Go Back</button>
-  <button onclick="goToScene1()">Back to Beginning</button>
+  <p>
+    The data shows that Finland has been the happiest country overall in 2018 and 2019 with Denmark and Norway representing the second and third happiest countries. 
+  </p>
+  <p>
+    Some might wonder, "How does happiness benefit those in the country?". Click on the 'Let's Continue' button to advance to the next slide and find out!
+  </p>
+  <button onclick="goToScene1()">Go Back</button>
+  <button onclick="goTohappyAndHealthy()">Let's Continue</button>
   <script>
       const happinessReportData = `Rank,Country,Year,Score,GDP per capita,Social support,Healthy life expectancy,Freedom to make life choices,Generosity,Perceptions of corruption
       10,Australia,2018,7.272,1.34,1.573,0.91,0.647,0.361,0.302
@@ -84,15 +106,19 @@
 
       const topCountries = d3.csvParse(happinessReportData);
 
-      // Getting the id for each container/filter
+      // Getting the id for each container/filter to add components to it
       const dataContainer = d3.select("#data-container");
       const filterContainer = d3.select("#filter-container");
       const yearFilter = d3.select("#year-filter");
 
-      // Extract unique years from data
+      const margin = { top: 50, right: 85, bottom: 50, left: 120 };
+      const width = 650 - margin.left - margin.right;
+      const height = 400 - margin.top - margin.bottom;
+
+      // Get the years from the Data (2018 and 2019)
       const years = Array.from(new Set(topCountries.map(d => d.Year)));
 
-      // Populate year options between 2018 and 2019 based on provided data
+      // Populate year options between 2018 and 2019 based on selected option
       yearFilter.selectAll("option")
         .data(years)
         .join("option")
@@ -111,9 +137,30 @@
       // Create SVG container for the chart
       const chartContainer = dataContainer.select(".chart-container");
 
-      const margin = { top: 50, right: 85, bottom: 50, left: 120 };
-      const width = 650 - margin.left - margin.right;
-      const height = 400 - margin.top - margin.bottom;
+      // Create arrow and annotation
+      const annotation = chartContainer.append("div")
+        .attr("class", "annotation")
+        .style("position", "relative");
+
+      annotation.append("div")
+        .attr("class", "arrow")
+        .style("position", "absolute")
+        .style("left", "50%")
+        .style("top", "-20px")
+        .style("width", "0")
+        .style("height", "0")
+        .style("border-left", "10px solid transparent")
+        .style("border-right", "10px solid transparent")
+        .style("border-bottom", "10px solid black");
+
+      annotation.append("div")
+        .attr("class", "text")
+        .style("position", "absolute")
+        .style("left", "50%")
+        .style("top", "-40px")
+        .style("transform", "translateX(-50%)")
+        .style("font-size", "14px")
+        .text("Hover over the bars for details");
 
       // Create SVG element for the chart
       const svg = chartContainer.append("svg")
@@ -130,15 +177,15 @@
         .attr("class", "tooltip")
         .style("opacity", 0);
 
-      // Function to update the chart based on the current year filter
+      // Update the chart based on the current year filter
       function updateChart() {
-        // Filter the data for the selected year
+        // Filter the data for the selected year in the filter
         const filteredData = topCountries.filter(d => d.Year === currentYear);
 
         // Sort the data by happiness score in descending order
         filteredData.sort((a, b) => a.Score - b.Score);
 
-        // Create scales for x and y axes
+        // X and Y scale based on the values to fit the chart properly
         const xScale = d3.scaleLinear()
           .domain([0, d3.max(filteredData, d => +d.Score)])
           .range([0, width]);
@@ -154,7 +201,7 @@
         chart.selectAll(".x-axis").remove();
         chart.selectAll(".y-axis").remove();
 
-        // Add bars to the chart
+        // Add bars to the chart representing the top 10 country scores in order
         chart.selectAll(".bar")
           .data(filteredData)
           .enter()
@@ -172,7 +219,7 @@
         const xAxis = d3.axisBottom(xScale);
         const yAxis = d3.axisLeft(yScale);
 
-        // Append x axis label
+        // Add x axis label
         svg.append("text")
           .attr("class", "axis-label")
           .attr("x", margin.left + width / 2)
@@ -180,7 +227,7 @@
           .style("text-anchor", "middle")
           .text("Happiness Score");
 
-        // Append y axis label
+        // Add y axis label
         svg.append("text")
           .attr("class", "axis-label")
           .attr("transform", "rotate(-90)")
@@ -190,15 +237,7 @@
           .style("text-anchor", "middle")
           .text("Country");
 
-        // Append chart title
-        svg.append("text")
-          .attr("class", "chart-title")
-          .attr("x", width / 2)
-          .attr("y", -margin.top / 2 - 10)
-          .attr("text-anchor", "middle")
-          .text("Happiness Scores by Country");
-
-          // Append x and y axes
+        // Add x and y axes to the chart
         chart.append("g")
           .attr("class", "x-axis")
           .attr("transform", `translate(0, ${height})`)
@@ -212,7 +251,7 @@
           .attr("class", "y-axis")
           .call(yAxis);
 
-        // Function to show the tooltip
+        // Showing tooltip on hover over bars on the chart
         function showTooltip(event, d) {
           tooltip.transition()
             .duration(200)
@@ -230,7 +269,7 @@
             .style("top", `${event.pageY}px`);
         }
 
-        // Function to hide the tooltip
+        // When tooltip is away from hovering
         function hideTooltip() {
           tooltip.transition()
             .duration(200)
@@ -241,15 +280,13 @@
       // Initialize chart
       updateChart();
 
-      function goTohappyAndHealthy() {
-        window.location.href = "happyAndHealthy.html";
-      }
-
       function goToScene1() {
         window.location.href = "index.html";
+      }
+
+      function goTohappyAndHealthy() {
+        window.location.href = "happyAndHealthy.html";
       }
   </script>
 </div>
 </html>
-
-
