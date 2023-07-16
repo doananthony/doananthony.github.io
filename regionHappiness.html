@@ -51,32 +51,18 @@
 </head>
 <script src="https://d3js.org/d3.v7.min.js"></script>
 <div class="container">
-  <h1>Does Happiness Result in a Healthy Life Expectancy?</h1>
+  <h1>Regional Happiness</h1>
   <p>
-    Let's the correlation between happiness and healthy life expectancy across different countries and years. 
-    The data provides insights into the scores and healthy life expectancy of various countries, 
-    allowing us to explore potential connections between happiness and well-being.
+    In this scene, we will examine the happiness scores of countries across different regions to gain a comprehensive understanding of regional variations in happiness levels.
   </p> 
-  <p>
-    By filtering the chart based on different years, we can observe how these factors have changed over time. 
-    The chart presents each country as a data point, with the x-axis representing healthy life expectancy and the y-axis representing the happiness score. 
-    The color-coded legend on the right indicates the different regions to which the countries belong. 
-  </p>
   <div id="data-container">
     <div id="filter-container">
       <label for="year-filter">Filter by Year:</label>
       <select id="year-filter"></select>
     </div>
   </div>
-  <p>
-    From the overview of the data, we notice that there is a positive correlation between happiness score and healthy life expectancy. Some other trends that the data
-    presents is that regions such as Europe & Central Asia have higher scores and life expectancy where the Sub-Saharan Africa region have lower scores and life expectancy. 
-  </p>
-  <p>
-    Let's take a deeper dive into the regions and their average scores!
-  </p>
-  <button onclick="goToTopTenHappiestCountries()">Go Back</button>
-  <button onclick="goToRegionHappiness()">Continue</button>
+  <button onclick="goToHappyAndHealthy()">Go Back</button>
+  <button onclick="goToScene1()">Back to Beginning</button>
   <script>
     // Happiness Report Data with Region Mapped
     const happinessReportData = `Rank,Country,Region,Year,Score,GDP per capita,Social support,Healthy life expectancy,Freedom to make life choices,Generosity,Perceptions of corruption
@@ -398,6 +384,20 @@
     const csvData = d3.csvParse(happinessReportData);
     const data = csvData.filter(d => d.Region !== "");
 
+    // Group the data by region
+    const regionData = d3.group(csvData, d => d.Region);
+
+    // Calculate the average scores for each region
+    const averageScoresByRegion = [];
+    regionData.forEach((regionEntries, region) => {
+      const regionScores = regionEntries.map(d => +d.Score);
+      const averageScore = d3.mean(regionScores);
+      averageScoresByRegion.push({ region, averageScore });
+    });
+
+    console.log(averageScoresByRegion);
+
+
     // Get unique regions and countries from data
     const regions = Array.from(new Set(data.map(d => d.Region)));
     const countries = Array.from(new Set(data.map(d => d.Country)));
@@ -607,12 +607,12 @@
     // Initialize plot
     updatePlot();
 
-    function goToRegionHappiness() {
-      window.location.href = "regionHappiness.html";
+    function goToScene1() {
+      window.location.href = "index.html";
     }
 
-    function goToTopTenHappiestCountries() {
-      window.location.href = "topTenHappiestCountries.html";
+    function goToHappyAndHealthy() {
+      window.location.href = "happyAndHealthy.html";
     }
   </script>
 </div>
