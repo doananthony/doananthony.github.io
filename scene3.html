@@ -25,6 +25,14 @@
         .chart-container {
             margin-top: 50px;
         }
+         .container {
+          max-width: 1800px;
+          margin: 0 auto;
+          background-color: #fff;
+          padding: 20px;
+          border-radius: 8px;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
         .tooltip {
             position: absolute;
             pointer-events: none;
@@ -36,178 +44,211 @@
     </style>
 </head>
 <body>
-<div>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<div class="container">
   <h1>Table of all the Countries</h1>
   <p>Thanks for stopping by!</p>
-</div>
-<div id="data-container">
+  <div id="data-container">
     <div id="filter-container">
         <label for="year-filter">Filter by Year:</label>
         <select id="year-filter"></select>
     </div>
-    <div class="chart-container"></div>
-</div>
-<script src="https://d3js.org/d3.v7.min.js"></script>
-<script>
-    const happinessReportData = `Rank,Country,Year,Score,GDP per capita,Social support,Healthy life expectancy,Freedom to make life choices,Generosity,Perceptions of corruption
-    10,Australia,2018,7.272,1.34,1.573,0.91,0.647,0.361,0.302
-    10,Austria,2019,7.246,1.376,1.475,1.016,0.532,0.244,0.226
-    9,Canada,2019,7.278,1.365,1.505,1.039,0.584,0.285,0.308
-    7,Canada,2018,7.328,1.33,1.532,0.896,0.653,0.321,0.291
-    2,Denmark,2019,7.6,1.383,1.573,0.996,0.592,0.252,0.41
-    3,Denmark,2018,7.555,1.351,1.59,0.868,0.683,0.284,0.408
-    1,Finland,2019,7.769,1.34,1.587,0.986,0.596,0.153,0.393
-    1,Finland,2018,7.632,1.305,1.592,0.874,0.681,0.202,0.393
-    4,Iceland,2019,7.494,1.38,1.624,1.026,0.591,0.354,0.118
-    4,Iceland,2018,7.495,1.343,1.644,0.914,0.677,0.353,0.138
-    5,Netherlands,2019,7.488,1.396,1.522,0.999,0.557,0.322,0.298
-    6,Netherlands,2018,7.441,1.361,1.488,0.878,0.638,0.333,0.295
-    8,New Zealand,2019,7.307,1.303,1.557,1.026,0.585,0.33,0.38
-    8,New Zealand,2018,7.324,1.268,1.601,0.876,0.669,0.365,0.389
-    3,Norway,2019,7.554,1.488,1.582,1.028,0.603,0.271,0.341
-    2,Norway,2018,7.594,1.456,1.582,0.861,0.686,0.286,0.34
-    7,Sweden,2019,7.343,1.387,1.487,1.009,0.574,0.267,0.373
-    9,Sweden,2018,7.314,1.355,1.501,0.913,0.659,0.285,0.383
-    6,Switzerland,2019,7.48,1.452,1.526,1.052,0.572,0.263,0.343
-    5,Switzerland,2018,7.487,1.42,1.549,0.927,0.66,0.256,0.357
-    `;
-
-    const topCountries = d3.csvParse(happinessReportData);
-
-    // Getting the id for each container/filter
-    const dataContainer = d3.select("#data-container");
-    const filterContainer = d3.select("#filter-container");
-    const yearFilter = d3.select("#year-filter");
-
-    // Extract unique years from data
-    const years = Array.from(new Set(topCountries.map(d => d.Year)));
-
-    // Populate year options between 2018 and 2019 based on provided data
-    yearFilter.selectAll("option")
-      .data(years)
-      .join("option")
-      .attr("value", d => d)
-      .text(d => d);
-
-    // Set initial filter value
-    let currentYear = yearFilter.property("value");
-
-    // Update chart when filter is changed
-    yearFilter.on("change", function () {
-      currentYear = this.value;
-      updateChart();
-    });
-
-    // Create SVG container for the chart
-    const chartContainer = dataContainer.select(".chart-container");
-
-    const margin = { top: 50, right: 50, bottom: 50, left: 100 };
-    const width = 600 - margin.left - margin.right;
-    const height = 400 - margin.top - margin.bottom;
-
-    // Create SVG element for the chart
-    const svg = chartContainer.append("svg")
-      .attr("width", width + margin.left + margin.right)
-      .attr("height", height + margin.top + margin.bottom);
-
-    // Create a group for the chart
-    const chart = svg.append("g")
-      .attr("transform", `translate(${margin.left}, ${margin.top})`);
-
-    // Create a tooltip
-    const tooltip = d3.select("body")
-      .append("div")
-      .attr("class", "tooltip")
-      .style("opacity", 0);
-
-    // Function to update the chart based on the current year filter
-    function updateChart() {
-      // Filter the data for the selected year
-      const filteredData = topCountries.filter(d => d.Year === currentYear);
-
-      // Sort the data by happiness score in descending order
-      filteredData.sort((a, b) => a.Score - b.Score);
-
-      // Create scales for x and y axes
-      const xScale = d3.scaleLinear()
-        .domain([0, d3.max(filteredData, d => +d.Score)])
-        .range([0, width]);
-
-      const yScale = d3.scaleBand()
-        .domain(filteredData.map(d => d.Country))
-        .range([height, 0])
-        .padding(0.1);
-
-      // Remove existing chart elements
-      chart.selectAll(".bar").remove();
-      chart.selectAll(".label").remove();
-
-      // Add bars to the chart
-      chart.selectAll(".bar")
-        .data(filteredData)
-        .enter()
-        .append("rect")
-        .attr("class", "bar")
-        .attr("x", 0)
-        .attr("y", d => yScale(d.Country))
-        .attr("width", d => xScale(+d.Score))
-        .attr("height", yScale.bandwidth())
-        .attr("fill", "steelblue")
-        .on("mouseover", showTooltip)
-        .on("mouseout", hideTooltip);
-
-      // Add labels on the left side of the bars
-      chart.selectAll(".label")
-        .data(filteredData)
-        .enter()
-        .append("text")
-        .attr("class", "label")
-        .attr("x", d => xScale(+d.Score) + 5)
-        .attr("y", d => yScale(d.Country) + yScale.bandwidth() / 2)
-        .attr("dy", "0.35em")
-        .attr("text-anchor", "start")
-        .text(d => d.Country);
-
-      // Function to show the tooltip
-      function showTooltip(event, d) {
-        tooltip.transition()
-          .duration(200)
-          .style("opacity", 0.9);
-
-        tooltip.html(`
-            <strong>Happiness Score:</strong> ${d.Score}<br>
-            <strong>GDP per capita:</strong> ${d["GDP per capita"]}<br>
-            <strong>Social support:</strong> ${d["Social support"]}<br>
-            <strong>Freedom to make life choices:</strong> ${d["Freedom to make life choices"]}<br>
-            <strong>Generosity:</strong> ${d.Generosity}<br>
-            <strong>Perceptions of corruption:</strong> ${d["Perceptions of corruption"]}
-          `)
-          .style("left", `${event.pageX + 10}px`)
-          .style("top", `${event.pageY}px`);
-      }
-
-      // Function to hide the tooltip
-      function hideTooltip() {
-        tooltip.transition()
-          .duration(200)
-          .style("opacity", 0);
-      }
-    }
-
-    // Initialize chart
-    updateChart();
-
-    function goTohappyAndHealthy() {
-      window.location.href = "happyAndHealthy.html";
-    }
-
-    function goToScene1() {
-      window.location.href = "index.html";
-    }
-</script>
-<div>
+    <div class="chart-container"></div> 
+  </div>
   <button onclick="goTohappyAndHealthy()">Go Back</button>
   <button onclick="goToScene1()">Back to Beginning</button>
+  <script>
+      const happinessReportData = `Rank,Country,Year,Score,GDP per capita,Social support,Healthy life expectancy,Freedom to make life choices,Generosity,Perceptions of corruption
+      10,Australia,2018,7.272,1.34,1.573,0.91,0.647,0.361,0.302
+      10,Austria,2019,7.246,1.376,1.475,1.016,0.532,0.244,0.226
+      9,Canada,2019,7.278,1.365,1.505,1.039,0.584,0.285,0.308
+      7,Canada,2018,7.328,1.33,1.532,0.896,0.653,0.321,0.291
+      2,Denmark,2019,7.6,1.383,1.573,0.996,0.592,0.252,0.41
+      3,Denmark,2018,7.555,1.351,1.59,0.868,0.683,0.284,0.408
+      1,Finland,2019,7.769,1.34,1.587,0.986,0.596,0.153,0.393
+      1,Finland,2018,7.632,1.305,1.592,0.874,0.681,0.202,0.393
+      4,Iceland,2019,7.494,1.38,1.624,1.026,0.591,0.354,0.118
+      4,Iceland,2018,7.495,1.343,1.644,0.914,0.677,0.353,0.138
+      5,Netherlands,2019,7.488,1.396,1.522,0.999,0.557,0.322,0.298
+      6,Netherlands,2018,7.441,1.361,1.488,0.878,0.638,0.333,0.295
+      8,New Zealand,2019,7.307,1.303,1.557,1.026,0.585,0.33,0.38
+      8,New Zealand,2018,7.324,1.268,1.601,0.876,0.669,0.365,0.389
+      3,Norway,2019,7.554,1.488,1.582,1.028,0.603,0.271,0.341
+      2,Norway,2018,7.594,1.456,1.582,0.861,0.686,0.286,0.34
+      7,Sweden,2019,7.343,1.387,1.487,1.009,0.574,0.267,0.373
+      9,Sweden,2018,7.314,1.355,1.501,0.913,0.659,0.285,0.383
+      6,Switzerland,2019,7.48,1.452,1.526,1.052,0.572,0.263,0.343
+      5,Switzerland,2018,7.487,1.42,1.549,0.927,0.66,0.256,0.357
+      `;
+
+      const topCountries = d3.csvParse(happinessReportData);
+
+      // Getting the id for each container/filter
+      const dataContainer = d3.select("#data-container");
+      const filterContainer = d3.select("#filter-container");
+      const yearFilter = d3.select("#year-filter");
+
+      // Extract unique years from data
+      const years = Array.from(new Set(topCountries.map(d => d.Year)));
+
+      // Populate year options between 2018 and 2019 based on provided data
+      yearFilter.selectAll("option")
+        .data(years)
+        .join("option")
+        .attr("value", d => d)
+        .text(d => d);
+
+      // Set initial filter value
+      let currentYear = yearFilter.property("value");
+
+      // Update chart when filter is changed
+      yearFilter.on("change", function () {
+        currentYear = this.value;
+        updateChart();
+      });
+
+      // Create SVG container for the chart
+      const chartContainer = dataContainer.select(".chart-container");
+
+      const margin = { top: 50, right: 85, bottom: 50, left: 120 };
+      const width = 650 - margin.left - margin.right;
+      const height = 400 - margin.top - margin.bottom;
+
+      // Create SVG element for the chart
+      const svg = chartContainer.append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom);
+
+      // Create a group for the chart
+      const chart = svg.append("g")
+        .attr("transform", `translate(${margin.left}, ${margin.top})`);
+
+      // Create a tooltip
+      const tooltip = d3.select("body")
+        .append("div")
+        .attr("class", "tooltip")
+        .style("opacity", 0);
+
+      // Function to update the chart based on the current year filter
+      function updateChart() {
+        // Filter the data for the selected year
+        const filteredData = topCountries.filter(d => d.Year === currentYear);
+
+        // Sort the data by happiness score in descending order
+        filteredData.sort((a, b) => a.Score - b.Score);
+
+        // Create scales for x and y axes
+        const xScale = d3.scaleLinear()
+          .domain([0, d3.max(filteredData, d => +d.Score)])
+          .range([0, width]);
+
+        const yScale = d3.scaleBand()
+          .domain(filteredData.map(d => d.Country))
+          .range([height, 0])
+          .padding(0.1);
+
+        // Remove existing chart elements
+        chart.selectAll(".bar").remove();
+        chart.selectAll(".label").remove();
+        chart.selectAll(".x-axis").remove();
+        chart.selectAll(".y-axis").remove();
+
+        // Add bars to the chart
+        chart.selectAll(".bar")
+          .data(filteredData)
+          .enter()
+          .append("rect")
+          .attr("class", "bar")
+          .attr("x", 0)
+          .attr("y", d => yScale(d.Country))
+          .attr("width", d => xScale(+d.Score))
+          .attr("height", yScale.bandwidth())
+          .attr("fill", "steelblue")
+          .on("mouseover", showTooltip)
+          .on("mouseout", hideTooltip);
+
+        // Create x and y axes
+        const xAxis = d3.axisBottom(xScale);
+        const yAxis = d3.axisLeft(yScale);
+
+        // Append x axis label
+        svg.append("text")
+          .attr("class", "axis-label")
+          .attr("x", margin.left + width / 2)
+          .attr("y", height + margin.top + 30)
+          .style("text-anchor", "middle")
+          .text("Happiness Score");
+
+        // Append y axis label
+        svg.append("text")
+          .attr("class", "axis-label")
+          .attr("transform", "rotate(-90)")
+          .attr("x", -height / 2)
+          .attr("y", -margin.left + 10)
+          .attr("dy", "0.71em")
+          .style("text-anchor", "middle")
+          .text("Country");
+
+        // Append chart title
+        svg.append("text")
+          .attr("class", "chart-title")
+          .attr("x", width / 2)
+          .attr("y", -margin.top / 2)
+          .attr("text-anchor", "middle")
+          .text("Happiness Scores by Country");
+
+          // Append x and y axes
+        chart.append("g")
+          .attr("class", "x-axis")
+          .attr("transform", `translate(0, ${height})`)
+          .call(xAxis)
+          .selectAll("text")
+          .attr("transform", "rotate(-45)")
+          .attr("dy", "0.7em")
+          .attr("text-anchor", "end");
+
+        chart.append("g")
+          .attr("class", "y-axis")
+          .call(yAxis);
+
+        // Function to show the tooltip
+        function showTooltip(event, d) {
+          tooltip.transition()
+            .duration(200)
+            .style("opacity", 0.9);
+
+          tooltip.html(`
+              <strong>Happiness Score:</strong> ${d.Score}<br>
+              <strong>GDP per capita:</strong> ${d["GDP per capita"]}<br>
+              <strong>Social support:</strong> ${d["Social support"]}<br>
+              <strong>Freedom to make life choices:</strong> ${d["Freedom to make life choices"]}<br>
+              <strong>Generosity:</strong> ${d.Generosity}<br>
+              <strong>Perceptions of corruption:</strong> ${d["Perceptions of corruption"]}
+            `)
+            .style("left", `${event.pageX + 10}px`)
+            .style("top", `${event.pageY}px`);
+        }
+
+        // Function to hide the tooltip
+        function hideTooltip() {
+          tooltip.transition()
+            .duration(200)
+            .style("opacity", 0);
+        }
+      }
+
+      // Initialize chart
+      updateChart();
+
+      function goTohappyAndHealthy() {
+        window.location.href = "happyAndHealthy.html";
+      }
+
+      function goToScene1() {
+        window.location.href = "index.html";
+      }
+  </script>
 </div>
-</body>
 </html>
+
+
