@@ -25,16 +25,21 @@
         .chart-container {
             margin-top: 50px;
         }
+        .tooltip {
+            position: absolute;
+            pointer-events: none;
+            opacity: 0;
+            background-color: #fff;
+            padding: 10px;
+            border: 1px solid #ccc;
+        }
     </style>
 </head>
 <body>
 <div>
-    <h1>Table of all the Countries</h1>
-    <p>Thanks for stopping by!</p>
-    <button onclick="goTohappyAndHealthy()">Go Back</button>
-    <button onclick="goToScene1()">Back to Beginning</button>
+  <h1>Table of all the Countries</h1>
+  <p>Thanks for stopping by!</p>
 </div>
-
 <div id="data-container">
     <div id="filter-container">
         <label for="year-filter">Filter by Year:</label>
@@ -42,7 +47,6 @@
     </div>
     <div class="chart-container"></div>
 </div>
-
 <script src="https://d3js.org/d3.v7.min.js"></script>
 <script>
     const happinessReportData = `Rank,Country,Year,Score,GDP per capita,Social support,Healthy life expectancy,Freedom to make life choices,Generosity,Perceptions of corruption
@@ -110,6 +114,12 @@
     const chart = svg.append("g")
       .attr("transform", `translate(${margin.left}, ${margin.top})`);
 
+    // Create a tooltip
+    const tooltip = d3.select("body")
+      .append("div")
+      .attr("class", "tooltip")
+      .style("opacity", 0);
+
     // Function to update the chart based on the current year filter
     function updateChart() {
       // Filter the data for the selected year
@@ -119,22 +129,17 @@
       filteredData.sort((a, b) => b.Score - a.Score);
 
       // Create scales for x and y axes
-      const xScale = d3.scaleBand()
-        .domain(filteredData.map(d => d.Country))
-        .range([0, width])
-        .padding(0.1);
-
-      const yScale = d3.scaleLinear()
+      const xScale = d3.scaleLinear()
         .domain([0, d3.max(filteredData, d => +d.Score)])
-        .range([height, 0]);
+        .range([0, width]);
 
-      // Create x and y axes
-      const xAxis = d3.axisBottom(xScale);
-      const yAxis = d3.axisLeft(yScale);
+      const yScale = d3.scaleBand()
+        .domain(filteredData.map(d => d.Country))
+        .range([height, 0])
+        .padding(0.1);
 
       // Remove existing chart elements
       chart.selectAll(".bar").remove();
-      chart.selectAll(".label").remove();
 
       // Add bars to the chart
       chart.selectAll(".bar")
@@ -142,34 +147,50 @@
         .enter()
         .append("rect")
         .attr("class", "bar")
-        .attr("x", d => xScale(d.Country))
-        .attr("y", d => yScale(+d.Score))
-        .attr("width", xScale.bandwidth())
-        .attr("height", d => height - yScale(+d.Score))
-        .attr("fill", "steelblue");
+        .attr("x", 0)
+        .attr("y", d => yScale(d.Country))
+        .attr("width", d => xScale(+d.Score))
+        .attr("height", yScale.bandwidth())
+        .attr("fill", "steelblue")
+        .on("mouseover", showTooltip)
+        .on("mouseout", hideTooltip);
 
-      // Add labels on top of the bars
+      // Add labels on the left side of the bars
       chart.selectAll(".label")
         .data(filteredData)
         .enter()
         .append("text")
         .attr("class", "label")
-        .attr("x", d => xScale(d.Country) + xScale.bandwidth() / 2)
-        .attr("y", d => yScale(+d.Score) - 5)
-        .attr("text-anchor", "middle")
-        .text(d => d.Score);
+        .attr("x", d => xScale(+d.Score) - 5)
+        .attr("y", d => yScale(d.Country) + yScale.bandwidth() / 2)
+        .attr("dy", "0.35em")
+        .attr("text-anchor", "end")
+        .text(d => d.Country);
 
-      // Update x and y axes
-      chart.select(".x-axis")
-        .attr("transform", `translate(0, ${height})`)
-        .call(xAxis)
-        .selectAll("text")
-        .attr("transform", "rotate(-45)")
-        .attr("dy", "0.7em")
-        .attr("text-anchor", "end");
+      // Function to show the tooltip
+      function showTooltip(event, d) {
+        tooltip.transition()
+          .duration(200)
+          .style("opacity", 0.9);
 
-      chart.select(".y-axis")
-        .call(yAxis);
+        tooltip.html(`
+            <strong>Happiness Score:</strong> ${d.Score}<br>
+            <strong>GDP per capita:</strong> ${d["GDP per capita"]}<br>
+            <strong>Social support:</strong> ${d["Social support"]}<br>
+            <strong>Freedom to make life choices:</strong> ${d["Freedom to make life choices"]}<br>
+            <strong>Generosity:</strong> ${d.Generosity}<br>
+            <strong>Perceptions of corruption:</strong> ${d["Perceptions of corruption"]}
+          `)
+          .style("left", `${d3.event.pageX + 10}px`)
+          .style("top", `${d3.event.pageY}px`);
+      }
+
+      // Function to hide the tooltip
+      function hideTooltip() {
+        tooltip.transition()
+          .duration(200)
+          .style("opacity", 0);
+      }
     }
 
     // Initialize chart
@@ -183,5 +204,9 @@
       window.location.href = "index.html";
     }
 </script>
+<div>
+  <button onclick="goTohappyAndHealthy()">Go Back</button>
+  <button onclick="goToScene1()">Back to Beginning</button>
+</div>
 </body>
 </html>
