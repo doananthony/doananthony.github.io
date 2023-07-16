@@ -387,16 +387,22 @@
     // Group the data by region
     const regionData = d3.group(csvData, d => d.Region);
 
-    // Calculate the average scores for each region
-    const averageScoresByRegion = [];
+    // Calculate the averages for each variable in each region
+    const averagesByRegion = [];
     regionData.forEach((regionEntries, region) => {
-      const regionScores = regionEntries.map(d => +d.Score);
-      const averageScore = d3.mean(regionScores);
-      averageScoresByRegion.push({ region, averageScore });
+      const variables = ["GDP per capita", "Social support", "Healthy life expectancy", "Freedom to make life choices", "Generosity", "Perceptions of corruption"];
+      const regionAverages = {};
+      
+      variables.forEach(variable => {
+        const variableValues = regionEntries.map(d => +d[variable]);
+        const average = d3.mean(variableValues);
+        regionAverages[variable] = average;
+      });
+      
+      averagesByRegion.push({ region, ...regionAverages });
     });
 
-    console.log(averageScoresByRegion);
-
+    console.log(averagesByRegion);
 
     // Get unique regions and countries from data
     const regions = Array.from(new Set(data.map(d => d.Region)));
