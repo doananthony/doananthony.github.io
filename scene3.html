@@ -46,10 +46,11 @@
 <body>
 <script src="https://d3js.org/d3.v7.min.js"></script>
 <div class="container">
-  <h1>Table of all the Countries</h1>
-  <p>Thanks for stopping by!</p>
+  <h1>Top Ten Happiest Countries</h1>
+  <p>Let's take a look into the top ten ranked happiest countries in the last two years</p>
   <div id="data-container">
     <div id="filter-container">
+        <h1>Top Ten Happiest Countries</h1>
         <label for="year-filter">Filter by Year:</label>
         <select id="year-filter"></select>
     </div>
@@ -117,7 +118,7 @@
       // Create SVG element for the chart
       const svg = chartContainer.append("svg")
         .attr("width", width + margin.left + margin.right)
-        .attr("height", height + margin.top + margin.bottom);
+        .attr("height", height + margin.top + margin.bottom + 60);
 
       // Create a group for the chart
       const chart = svg.append("g")
@@ -193,7 +194,7 @@
         svg.append("text")
           .attr("class", "chart-title")
           .attr("x", width / 2)
-          .attr("y", -margin.top / 2)
+          .attr("y", -margin.top / 2 - 10)
           .attr("text-anchor", "middle")
           .text("Happiness Scores by Country");
 
