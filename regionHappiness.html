@@ -26,9 +26,6 @@
       cursor: pointer;
       margin: 10px;
     }
-    #data-container {
-      margin-bottom: 20px;
-    }
     .container {
       max-width: 1600px;
       margin: 0 auto;
@@ -37,15 +34,21 @@
       border-radius: 8px;
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
+    .bar {
+      fill: steelblue;
+    }
+    .bar-label {
+      font-size: 12px;
+      fill: #333;
+      text-anchor: middle;
+    }
     .tooltip {
-      position: absolute;
-      opacity: 0;
-      background-color: white;
-      padding: 10px;
-      border: 1px solid #ccc;
-      font-family: Arial, sans-serif;
-      font-size: 14px;
-      pointer-events: none;
+        position: absolute;
+        pointer-events: none;
+        opacity: 0;
+        background-color: #fff;
+        padding: 10px;
+        border: 1px solid #ccc;
     }
   </style>
 </head>
@@ -55,11 +58,8 @@
   <p>
     In this scene, we will examine the happiness scores of countries across different regions to gain a comprehensive understanding of regional variations in happiness levels.
   </p> 
-  <div id="data-container">
-    <div id="filter-container">
-      <label for="year-filter">Filter by Year:</label>
-      <select id="year-filter"></select>
-    </div>
+  <div>
+    <svg id="chart-container"></svg>
   </div>
   <button onclick="goToHappyAndHealthy()">Go Back</button>
   <button onclick="goToScene1()">Back to Beginning</button>
@@ -387,231 +387,143 @@
     // Group the data by region
     const regionData = d3.group(csvData, d => d.Region);
 
-    // Calculate the averages for each variable in each region
+    // Calculate the averages for each category in each region
     const averagesByRegion = [];
     regionData.forEach((regionEntries, region) => {
-      const variables = ["GDP per capita", "Social support", "Healthy life expectancy", "Freedom to make life choices", "Generosity", "Perceptions of corruption"];
-      const regionAverages = {};
-      
-      variables.forEach(variable => {
-        const variableValues = regionEntries.map(d => +d[variable]);
-        const average = d3.mean(variableValues);
-        regionAverages[variable] = average;
-      });
-      
-      averagesByRegion.push({ region, ...regionAverages });
+      // Exclude entries with null region
+      if (region !== null && region !== "") {
+        const variables = ["Score", "GDP per capita", "Social support", "Healthy life expectancy", "Freedom to make life choices", "Generosity", "Perceptions of corruption"];
+        const regionAverages = {};
+
+        variables.forEach(variable => {
+          const variableValues = regionEntries.map(d => +d[variable]);
+          const average = d3.mean(variableValues);
+          regionAverages[variable] = average;
+        });
+
+        averagesByRegion.push({ region, ...regionAverages });
+      }
     });
 
-    console.log(averagesByRegion);
+    // Sort the regions by average score in descending order
+    averagesByRegion.sort((a, b) => b.Score - a.Score);
 
-    // Get unique regions and countries from data
-    const regions = Array.from(new Set(data.map(d => d.Region)));
-    const countries = Array.from(new Set(data.map(d => d.Country)));
+    // Define the dimensions of the chart
+    const width = 800;
+    const height = 400;
+    const margin = { top: 50, right: 100, bottom: 50, left: 150 };
+    const chartWidth = width - margin.left - margin.right;
+    const chartHeight = height - margin.top - margin.bottom;
 
-    // Getting the id for each container/filter to add components to it
-    const dataContainer = d3.select("#data-container");
-    const filterContainer = d3.select("#filter-container");
-    const yearFilter = d3.select("#year-filter");
+    // Create the SVG container for the chart
+    const svg = d3.select("#chart-container")
+      .attr("width", width)
+      .attr("height", height);
 
-    // Extract unique years from data
-    const years = Array.from(new Set(data.map(d => d.Year)));
-
-    // Populate year options between 2018 and 2019 based on provided data
-    yearFilter.selectAll("option")
-      .data(years)
-      .join("option")
-      .attr("value", d => d)
-      .text(d => d);
-
-    // Set initial filter value
-    let currentYear = yearFilter.property("value");
-
-    // Update table when filter is changed
-    yearFilter.on("change", function () {
-      currentYear = this.value;
-      updatePlot();
-    });
-
-    // Create SVG container for the plot
-    const plotContainer = dataContainer.append("div")
-      .attr("class", "plot-container");
-
-    const margin = { top: 50, right: 50, bottom: 50, left: 50 };
-    const width = 600 - margin.left - margin.right;
-    const height = 400 - margin.top - margin.bottom;
-    const legendWidth = 200;
-    const legendHeight = regions.length * 20;
-
-    // Create SVG element for the plot
-    const svg = plotContainer.append("svg")
-      .attr("width", width + margin.left + margin.right + legendWidth)
-      .attr("height", height + margin.top + margin.bottom);
-
-    // Create a container for the chart to plot the datasets
-    const chartContainer = svg.append("g")
+    // Create the chart group
+    const chartGroup = svg.append("g")
       .attr("transform", `translate(${margin.left}, ${margin.top})`);
 
-    // Setting color scale that will be used for each unique region
-    const colorScale = d3.scaleOrdinal()
-      .domain(regions)
-      .range(d3.schemeCategory10);
-    
-    // Set up x-axis based on flexible healthy life expectancy scores
+    // Append chart title
+    const chartTitle = svg.append("text")
+      .attr("class", "chart-title")
+      .attr("x", width / 2)
+      .attr("y", margin.top / 2)
+      .attr("text-anchor", "middle")
+      .attr("font-weight", "bold")
+      .text("Ranked Average Happiness Score by Region");
+
+    // Create the x-scale
     const xScale = d3.scaleLinear()
-      .domain(d3.extent(data, d => +d["Healthy life expectancy"]))
-      .range([0, width]);
-    
+      .domain([0, d3.max(averagesByRegion, d => d.Score)])
+      .range([0, chartWidth]);
+
+    // Create the y-scale
+    const yScale = d3.scaleBand()
+      .domain(averagesByRegion.map(d => d.region))
+      .range([0, chartHeight])
+      .padding(0.2);
+
+    // Create the x-axis
     const xAxis = d3.axisBottom(xScale);
 
-    // Set up y-axis between 0-10 for happiness score with defined tick marks
-    const yScale = d3.scaleLinear()
-      .domain([0,10])
-      .range([height, 0]);
+    // Create the y-axis
+    const yAxis = d3.axisLeft(yScale);
 
-    const yAxis = d3.axisLeft(yScale)
-      .ticks(10);
-
-    // Add x axis
-    chartContainer.append("g")
+    // Append the x-axis to the chart
+    chartGroup.append("g")
       .attr("class", "x-axis")
-      .attr("transform", `translate(0, ${height})`)
-      .call(xAxis)
-      .append("text")
-      .attr("x", width / 2)
-      .attr("y", 40)
-      .attr("text-anchor", "middle")
-      .style("fill", "black")
-      .text("Healthy Life Expectancy");
+      .attr("transform", `translate(0, ${chartHeight})`)
+      .call(xAxis);
 
-    // Add y axis
-    chartContainer.append("g")
+    // Append the y-axis to the chart
+    chartGroup.append("g")
       .attr("class", "y-axis")
-      .call(yAxis)
-      .append("text")
-      .attr("transform", "rotate(-90)")
-      .attr("x", -height / 2)
-      .attr("y", -margin.left + 20) // Need to move a little to the left to give space for the margin
+      .call(yAxis);
+
+    // Append x-axis label for Happiness Score
+    svg.append("text")
+      .attr("class", "axis-label")
+      .attr("x", width / 2)
+      .attr("y", height - margin.bottom / 2 + 20)
       .attr("text-anchor", "middle")
-      .style("fill", "black")
       .text("Happiness Score");
 
-    // Add each country's score as a circle in the chart with the correct region fill
-    chartContainer.selectAll("circle")
-      .data(data)
-      .enter()
-      .append("circle")
-      .attr("cx", d => xScale(d["Healthy life expectancy"]))
-      .attr("cy", d => yScale(d.Score))
-      .attr("r", 5)
-      .attr("fill", d => colorScale(d.Region)); // Use color scale to assign color based on region
-
-    // Create legend container
-    const legendContainer = svg.append("g")
-      .attr("class", "legend-container")
-      .attr("transform", `translate(${width + margin.left + 30}, ${margin.top})`); // Translate to make sure legend does not overlap chart
-
-    legendContainer.append("text")
-      .attr("class", "legend-title")
-      .attr("x", 0)
-      .attr("y", -10)
-      .style("font-weight", "bold") // Bold font weight
-      .text("Regions");
-
-    // Add color and labels for each region to help user identify
-    const colorSquares = legendContainer.selectAll(".color-square")
-      .data(regions)
+    // Create the bars for region scores
+    const regionBars = chartGroup.selectAll(".bar")
+      .data(averagesByRegion)
       .enter()
       .append("rect")
-      .attr("class", "color-square")
+      .attr("class", "bar")
       .attr("x", 0)
-      .attr("y", (d, i) => i * 20)
-      .attr("width", 10)
-      .attr("height", 10)
-      .attr("fill", d => colorScale(d));
+      .attr("y", d => yScale(d.region))
+      .attr("width", d => xScale(d.Score))
+      .attr("height", yScale.bandwidth())
+      .attr("fill", "steelblue");
 
-    const regionLabels = legendContainer.selectAll(".region-label")
-      .data(regions)
+    // Create labels for the bars
+    const barLabels = chartGroup.selectAll(".bar-label")
+      .data(averagesByRegion)
       .enter()
       .append("text")
-      .attr("class", "region-label")
-      .attr("x", 15)
-      .attr("y", (d, i) => i * 20 + 9)
-      .text(d => d);
-
-    // Create annotation 
-    const annotation = svg.append("g")
-      .attr("class", "annotation")
-      .attr("transform", `translate(${margin.left + 30}, ${margin.top + 10})`); // Adjust the position of the annotation
-
-    // Add text
-    const text = annotation.append("text")
-      .attr("class", "text")
-      .text("Hover over a data point for detailed information")
-      .style("font-family", "Arial, sans-serif")
-      .style("font-size", "14px")
-      .style("background-color", "white")
-      .style("padding", "10px")
-      .style("border", "1px solid black");
-
-    // Arrow next to the text to indicate they can hover over it
-    const arrow = annotation.append("path")
-      .attr("class", "arrow")
-      .attr("d", "M0,0 L10,0 L5,10 Z")
-      .attr("transform", `translate(${text.node().getBBox().width + 5}, 0)`);
+      .attr("class", "bar-label")
+      .attr("x", d => xScale(d.Score) + 15)
+      .attr("y", d => yScale(d.region) + yScale.bandwidth() / 2 + 5)
+      .text(d => d.Score.toFixed(2))
+      .attr("fill", "#333");
     
-    // Add tooltip
-    const tooltip = d3
-      .select("body")
+    // Create a tooltip
+    const tooltip = d3.select("body")
       .append("div")
       .attr("class", "tooltip")
-      .style("position", "absolute")
       .style("opacity", 0);
 
-    svg.selectAll("circle")
-      .on("mouseover", function (event, d) {
-        tooltip.transition()
-          .duration(200)
-          .style("opacity", 0.9);
-        tooltip.html(`Country: ${d.Country}<br>Region: ${d.Region}<br>Score: ${d.Score}<br>Healthy Life Expectancy: ${d["Healthy life expectancy"]}<br><br>`)
-          .style("left", (event.pageX + 10) + "px")
-          .style("top", (event.pageY - 28) + "px");
-      })
-      .on("mouseout", function () {
-        tooltip.transition()
-          .duration(500)
-          .style("opacity", 0);
-      });
+    // Add mouseover event handler for the bars
+    regionBars.on("mouseover", function (event, d) {
+      // Calculate the tooltip position relative to the mouse pointer
+      const [x, y] = d3.pointer(event);
 
-    // Update plot based on selected year filter by user
-    function updatePlot() {
-      const filteredData = data.filter(d => d.Year === currentYear);
-
-      // Update x scale to fit the data
-      xScale.domain(d3.extent(filteredData, d => +d["Healthy life expectancy"]));
-
-      // Update x/y axes and dots for the selected year
-      svg.select(".x-axis")
-        .transition()
-        .duration(500)
-        .call(xAxis);
-
-      svg.select(".y-axis")
-        .transition()
-        .duration(500)
-        .call(yAxis);
-
-      // Update dots
-      svg.selectAll("circle")
-        .data(filteredData)
-        .transition()
-        .duration(500)
-        .attr("cx", d => xScale(+d["Healthy life expectancy"]))
-        .attr("cy", d => yScale(+d.Score))
-        .attr("fill", d => colorScale(d.Region));
-    }
-
-    // Initialize plot
-    updatePlot();
+      // Show the tooltip with the region and variable averages
+      tooltip.transition()
+        .duration(200)
+        .style("opacity", 0.9);
+      tooltip.html(`<strong>${d.region}</strong><br>
+                    Score: ${d.Score.toFixed(2)}<br>
+                    GDP per capita: ${d["GDP per capita"].toFixed(2)}<br>
+                    Social support: ${d["Social support"].toFixed(2)}<br>
+                    Healthy life expectancy: ${d["Healthy life expectancy"].toFixed(2)}<br>
+                    Freedom to make life choices: ${d["Freedom to make life choices"].toFixed(2)}<br>
+                    Generosity: ${d.Generosity.toFixed(2)}<br>
+                    Perceptions of corruption: ${d["Perceptions of corruption"].toFixed(2)}`)
+        .style("left", `${x}px`)
+        .style("top", `${y}px`);
+    })
+    .on("mouseout", function (event, d) {
+      // Hide the tooltip
+      tooltip.transition()
+        .duration(200)
+        .style("opacity", 0);
+    });
 
     function goToScene1() {
       window.location.href = "index.html";
