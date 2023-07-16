@@ -57,12 +57,24 @@
   <h1>Regional Happiness</h1>
   <p>
     In this scene, we will examine the happiness scores of countries across different regions to gain a comprehensive understanding of regional variations in happiness levels.
+  </p>
+  <p>
+    Although the other slide showed that many of countries in the Europe & Central Asia trended at the top of the chart, it is actually the
+    North American Region that had the highest average Happiness Score. 
+  </p> 
+  <p>
+    Hover over any of the bars in the chart below to get the average scores of each region's GDP per capita, Social Support, Healthy life expectancy, Freedom to make life choices
+    Generosity and Perception of corruption. All of which are factors that impact a region/country's happiness.
   </p> 
   <div>
     <svg id="chart-container"></svg>
   </div>
+  <p>
+    As the data shows, the regions that have the higher average happiness scores will also have higher averages
+    in the majority of the other characteristics where as the lower scoring regions will have lower scores all across the board.
+  </p> 
   <button onclick="goToHappyAndHealthy()">Go Back</button>
-  <button onclick="goToScene1()">Back to Beginning</button>
+  <button onclick="goToEndScene()">Continue</button>
   <script>
     // Happiness Report Data with Region Mapped
     const happinessReportData = `Rank,Country,Region,Year,Score,GDP per capita,Social support,Healthy life expectancy,Freedom to make life choices,Generosity,Perceptions of corruption
@@ -424,7 +436,7 @@
     const chartGroup = svg.append("g")
       .attr("transform", `translate(${margin.left}, ${margin.top})`);
 
-    // Append chart title
+    // Chart title
     const chartTitle = svg.append("text")
       .attr("class", "chart-title")
       .attr("x", width / 2)
@@ -433,35 +445,35 @@
       .attr("font-weight", "bold")
       .text("Ranked Average Happiness Score by Region");
 
-    // Create the x-scale
+    // x-scale
     const xScale = d3.scaleLinear()
       .domain([0, d3.max(averagesByRegion, d => d.Score)])
       .range([0, chartWidth]);
 
-    // Create the y-scale
+    // y-scale
     const yScale = d3.scaleBand()
       .domain(averagesByRegion.map(d => d.region))
       .range([0, chartHeight])
       .padding(0.2);
 
-    // Create the x-axis
+    // Create x-axis
     const xAxis = d3.axisBottom(xScale);
 
-    // Create the y-axis
+    // Create y-axis
     const yAxis = d3.axisLeft(yScale);
 
-    // Append the x-axis to the chart
+    // X-axis
     chartGroup.append("g")
       .attr("class", "x-axis")
       .attr("transform", `translate(0, ${chartHeight})`)
       .call(xAxis);
 
-    // Append the y-axis to the chart
+    // Y-axis 
     chartGroup.append("g")
       .attr("class", "y-axis")
       .call(yAxis);
 
-    // Append x-axis label for Happiness Score
+    // X-axis label for Happiness Score
     svg.append("text")
       .attr("class", "axis-label")
       .attr("x", width / 2)
@@ -469,7 +481,7 @@
       .attr("text-anchor", "middle")
       .text("Happiness Score");
 
-    // Create the bars for region scores
+    // Create bars for region happiness score
     const regionBars = chartGroup.selectAll(".bar")
       .data(averagesByRegion)
       .enter()
@@ -481,7 +493,7 @@
       .attr("height", yScale.bandwidth())
       .attr("fill", "steelblue");
 
-    // Create labels for the bars
+    // Bar labels on displaying the average happiness score
     const barLabels = chartGroup.selectAll(".bar-label")
       .data(averagesByRegion)
       .enter()
@@ -492,7 +504,7 @@
       .text(d => d.Score.toFixed(2))
       .attr("fill", "#333");
     
-    // Create a tooltip
+    // Create tooltip
     const tooltip = d3.select("body")
       .append("div")
       .attr("class", "tooltip")
@@ -500,10 +512,7 @@
 
     // Add mouseover event handler for the bars
     regionBars.on("mouseover", function (event, d) {
-      // Calculate the tooltip position relative to the mouse pointer
-      const [x, y] = d3.pointer(event);
-
-      // Show the tooltip with the region and variable averages
+      // Show the tooltip with the region and characteristic averages
       tooltip.transition()
         .duration(200)
         .style("opacity", 0.9);
@@ -515,18 +524,18 @@
                     Freedom to make life choices: ${d["Freedom to make life choices"].toFixed(2)}<br>
                     Generosity: ${d.Generosity.toFixed(2)}<br>
                     Perceptions of corruption: ${d["Perceptions of corruption"].toFixed(2)}`)
-        .style("left", `${x}px`)
-        .style("top", `${y}px`);
+        .style("left", `${event.pageX + 10}px`)
+        .style("top", `${event.pageY}px`);
     })
     .on("mouseout", function (event, d) {
-      // Hide the tooltip
+      // Hide the tooltip if the user moves mouse away
       tooltip.transition()
         .duration(200)
         .style("opacity", 0);
     });
 
-    function goToScene1() {
-      window.location.href = "index.html";
+    function goToEndScene() {
+      window.location.href = "end.html";
     }
 
     function goToHappyAndHealthy() {
