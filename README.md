@@ -10,6 +10,8 @@ This narrative explores regional variations in happiness scores, correlations be
 
 # Write-Up
 
+The following sections goes into the technical details of the narrative visual.
+
 ## Messaging
 
 The message of the narrative is to explore and understand how different countries and regions from around the world score in terms of happiness scores. The nature of happiness is multidimensional, with different factors that impact it, such as GDP per capita, social support, freedom to make life choices, generosity, and perceptions of corruption. The narrative explores the correlation between these factors and also provides details on how happiness impacts a country’s healthy life expectancy. In summary, this website aims to provide insights and allow users better understanding of the complexity of happiness of different countries around the world.
